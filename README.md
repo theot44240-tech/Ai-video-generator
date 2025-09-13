@@ -1,4 +1,3 @@
-# Ai-video-generator
 import React, { useState, useEffect } from 'react';
 import { Play, Upload, Settings, TrendingUp, BookOpen, Smile, Calendar, Eye, Youtube, Music2, Link, Check, X, Edit3, Download, AlertCircle, Key, Shield, Clock, Plus, Trash2, Send, BarChart3, Zap, Star, Filter } from 'lucide-react';
 
