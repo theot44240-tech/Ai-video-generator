@@ -1,20 +1,31 @@
-document.getElementById("chat-form").addEventListener("submit", async (e) => {
+document.querySelector("form").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const question = document.getElementById("question").value;
-  const responseDiv = document.getElementById("response");
+  const input = document.querySelector("input");
+  const question = input.value;
+  const output = document.querySelector("#output");
 
-  responseDiv.innerText = "⏳ Je réfléchis...";
+  if (!question) return;
+
+  output.textContent = "⏳ L'IA réfléchit...";
 
   try {
-    const res = await fetch(`/api/ask?q=${encodeURIComponent(question)}&key=1234`);
-    if (!res.ok) {
-      responseDiv.innerText = "❌ Erreur : clé invalide ou problème serveur.";
-      return;
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: question }),
+    });
+
+    const data = await response.json();
+
+    if (data.error) {
+      output.textContent = "❌ Erreur : " + data.error;
+    } else {
+      output.textContent = "🤖 " + data.reply;
     }
-    const text = await res.text();
-    responseDiv.innerText = text;
   } catch (err) {
-    responseDiv.innerText = "⚠️ Erreur réseau : " + err.message;
+    output.textContent = "❌ Impossible de contacter le serveur.";
   }
+
+  input.value = "";
 });
