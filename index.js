@@ -1,49 +1,43 @@
 import express from "express";
-import fetch from "node-fetch";
-import dotenv from "dotenv";
-
-dotenv.config();
+import bodyParser from "body-parser";
+import cors from "cors";
+import OpenAI from "openai";
 
 const app = express();
-app.use(express.json());
-app.use(express.static("public")); // sert ton frontend
+const port = process.env.PORT || 3000;
 
-const PORT = process.env.PORT || 3000;
+// Middlewares
+app.use(cors());
+app.use(bodyParser.json());
+app.use(express.static("public")); // Pour servir index.html, style.css et script.js
 
-// Endpoint API qui fait la requête vers OpenAI
-app.post("/api/chat", async (req, res) => {
+// Initialisation de l'API OpenAI avec la clé stockée sur Render
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+// Route API
+app.post("/api/ask", async (req, res) => {
   try {
-    const { message } = req.body;
+    const question = req.body.question;
 
-    if (!message) {
-      return res.status(400).json({ error: "Message manquant" });
+    if (!question) {
+      return res.status(400).json({ error: "❌ Aucune question fournie" });
     }
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [{ role: "user", content: message }],
-      }),
+    const completion = await client.chat.completions.create({
+      model: "gpt-3.5-turbo", // ou "gpt-4" si tu as accès
+      messages: [{ role: "user", content: question }],
     });
 
-    const data = await response.json();
-
-    if (data.error) {
-      return res.status(500).json({ error: data.error.message });
-    }
-
-    res.json({ reply: data.choices[0].message.content });
+    res.json({ reply: completion.choices[0].message.content });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erreur serveur" });
+    console.error("Erreur API OpenAI :", error);
+    res.status(500).json({ error: "⚠️ Erreur lors de l'appel à l'API OpenAI" });
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Serveur en ligne sur http://localhost:${PORT}`);
+// Lancement du serveur
+app.listen(port, () => {
+  console.log(`🚀 Serveur lancé sur http://localhost:${port}`);
 });
