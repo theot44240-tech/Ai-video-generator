@@ -1,26 +1,36 @@
-document.getElementById("chat-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.querySelector("form");
+  const input = document.querySelector("input");
+  const result = document.createElement("p");
+  document.body.appendChild(result);
 
-  const question = document.getElementById("question").value;
-  const responseDiv = document.getElementById("response");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const message = input.value.trim();
 
-  responseDiv.textContent = "⏳ Attends, je réfléchis...";
+    if (!message) return;
 
-  try {
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question })
-    });
+    result.textContent = "⏳ L’IA réfléchit...";
 
-    const data = await res.json();
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message }),
+      });
 
-    if (data.answer) {
-      responseDiv.textContent = data.answer;
-    } else {
-      responseDiv.textContent = "❌ Erreur : aucune réponse reçue.";
+      const data = await response.json();
+
+      if (data.reply) {
+        result.textContent = `🤖 ${data.reply}`;
+      } else {
+        result.textContent = `⚠️ Erreur: ${data.error || "aucune réponse"}`;
+      }
+    } catch (error) {
+      console.error("Erreur côté client:", error);
+      result.textContent = "❌ Erreur de connexion au serveur";
     }
-  } catch (error) {
-    responseDiv.textContent = "❌ Erreur de connexion au serveur.";
-  }
+  });
 });
