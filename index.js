@@ -1,13 +1,28 @@
-// index.js
-const express = require("express");
-const app = express();
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
 
-app.get("/", (req, res) => {
-  res.send("Hello from Render 🚀");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Sert les fichiers frontend (public/)
+app.use(express.static(path.join(__dirname, "public")));
+
+// API protégée par clé
+app.get("/api/ask", (req, res) => {
+  const userKey = req.query.key;
+  if (userKey !== process.env.MY_SECRET_KEY) {
+    return res.status(403).send("Accès refusé 🚫");
+  }
+
+  const question = req.query.q || "Aucune question posée";
+  // 👉 Ici tu appelleras ton IA (OpenAI, etc.)
+  res.send(`Réponse de l'IA à: "${question}"`);
 });
 
-// Utilise le PORT fourni par Render
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`✅ Serveur en ligne sur le port ${PORT}`);
 });
