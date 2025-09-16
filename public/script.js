@@ -1,31 +1,29 @@
-document.querySelector("form").addEventListener("submit", async (e) => {
+document.getElementById("chat-form").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const input = document.querySelector("input");
-  const question = input.value;
-  const output = document.querySelector("#output");
+  const question = document.getElementById("question").value;
+  const output = document.getElementById("output");
 
-  if (!question) return;
-
-  output.textContent = "⏳ L'IA réfléchit...";
+  output.textContent = "⏳ Réponse en cours...";
 
   try {
-    const response = await fetch("/api/chat", {
+    const response = await fetch("/api/ask", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: question }),
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ question })
     });
 
     const data = await response.json();
 
-    if (data.error) {
-      output.textContent = "❌ Erreur : " + data.error;
+    if (data.reply) {
+      output.textContent = data.reply;
     } else {
-      output.textContent = "🤖 " + data.reply;
+      output.textContent = "❌ Erreur : aucune réponse reçue.";
     }
-  } catch (err) {
-    output.textContent = "❌ Impossible de contacter le serveur.";
+  } catch (error) {
+    console.error("Erreur :", error);
+    output.textContent = "⚠️ Erreur de connexion au serveur.";
   }
-
-  input.value = "";
 });
