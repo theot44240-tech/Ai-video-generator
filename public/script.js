@@ -2,28 +2,25 @@ document.getElementById("chat-form").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const question = document.getElementById("question").value;
-  const output = document.getElementById("output");
+  const responseDiv = document.getElementById("response");
 
-  output.textContent = "⏳ Réponse en cours...";
+  responseDiv.textContent = "⏳ Attends, je réfléchis...";
 
   try {
-    const response = await fetch("/api/ask", {
+    const res = await fetch("/api/chat", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question })
     });
 
-    const data = await response.json();
+    const data = await res.json();
 
-    if (data.reply) {
-      output.textContent = data.reply;
+    if (data.answer) {
+      responseDiv.textContent = data.answer;
     } else {
-      output.textContent = "❌ Erreur : aucune réponse reçue.";
+      responseDiv.textContent = "❌ Erreur : aucune réponse reçue.";
     }
   } catch (error) {
-    console.error("Erreur :", error);
-    output.textContent = "⚠️ Erreur de connexion au serveur.";
+    responseDiv.textContent = "❌ Erreur de connexion au serveur.";
   }
 });
