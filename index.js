@@ -1,49 +1,45 @@
 import express from "express";
+import bodyParser from "body-parser";
 import fetch from "node-fetch";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Middleware
-app.use(express.json());
-app.use(express.static("public")); // pour ton index.html + script.js
+app.use(bodyParser.json());
+app.use(express.static("public")); // sert le frontend
 
 // Route API
 app.post("/api/chat", async (req, res) => {
-  const userMessage = req.body.message;
-
-  if (!userMessage) {
-    return res.status(400).json({ error: "Message manquant" });
-  }
-
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`, // 🔑 Render fournit la clé
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [{ role: "user", content: userMessage }],
-      }),
-    });
+    const userMessage = req.body.message;
+
+    const response = await fetch(
+      "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.HF_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          inputs: userMessage,
+        }),
+      }
+    );
 
     const data = await response.json();
 
     if (data.error) {
-      return res.status(500).json({ error: data.error.message });
+      return res.status(400).json({ error: data.error });
     }
 
-    const aiMessage = data.choices[0].message.content;
-    res.json({ reply: aiMessage });
+    res.json({ reply: data[0].generated_text });
   } catch (error) {
-    console.error("Erreur serveur :", error);
+    console.error("Erreur API Hugging Face:", error);
     res.status(500).json({ error: "Erreur interne du serveur" });
   }
 });
 
-// Lancer serveur
-app.listen(PORT, () => {
-  console.log(`🚀 Serveur lancé sur http://localhost:${PORT}`);
-});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🚀 Serveur démarré sur le port ${PORT}`));
