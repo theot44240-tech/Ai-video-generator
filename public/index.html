@@ -1,22 +1,30 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <title>Mon IA</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <h1>Bienvenue sur mon IA 🚀</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mon IA 🚀</title>
+  </head>
+  <body>
+    <h1>Bienvenue sur mon IA 🚀</h1>
+    <input id="message" type="text" placeholder="Écris-moi un message" />
+    <button onclick="sendMessage()">Envoyer</button>
+    <div id="response"></div>
 
-  <!-- Formulaire question -->
-  <form id="chat-form">
-    <input type="text" id="question" placeholder="Pose ta question..." required>
-    <button type="submit">Envoyer</button>
-  </form>
+    <script>
+      async function sendMessage() {
+        const message = document.getElementById("message").value;
 
-  <!-- Zone où la réponse s'affiche -->
-  <p id="output"></p>
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message }),
+        });
 
-  <script src="script.js"></script>
-</body>
+        const data = await res.json();
+        document.getElementById("response").innerText = data.reply || data.error;
+      }
+    </script>
+  </body>
 </html>
