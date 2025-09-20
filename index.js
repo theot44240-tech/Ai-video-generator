@@ -1,37 +1,46 @@
-import dotenv from "dotenv";
-dotenv.config();
 import express from "express";
+import bodyParser from "body-parser";
+import dotenv from "dotenv";
 import fetch from "node-fetch";
 
+dotenv.config();
+
 const app = express();
-app.use(express.json());
+app.use(bodyParser.json());
 
-app.post("/api/chat", async (req, res) => {
-  const { message } = req.body;
+const PORT = process.env.PORT || 3000;
+const HF_TOKEN = process.env.HF_TOKEN;
 
+// ➡️ Route d’accueil
+app.get("/", (req, res) => {
+  res.send("🚀 Mon API est en ligne et fonctionne !");
+});
+
+// ➡️ Exemple de route pour parler à Hugging Face
+app.post("/chat", async (req, res) => {
   try {
-    const response = await fetch("https://api-inference.huggingface.co/models/gpt2", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${process.env.HF_TOKEN}`, // <-- ton token Hugging Face
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        inputs: message,
-      }),
-    });
+    const { message } = req.body;
+
+    const response = await fetch(
+      "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${HF_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ inputs: message }),
+      }
+    );
 
     const data = await response.json();
-
-    res.json({
-      reply: data[0]?.generated_text || "Pas de réponse générée",
-    });
+    res.json(data);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erreur Hugging Face" });
+    console.error("Erreur :", error);
+    res.status(500).json({ error: "Problème avec Hugging Face" });
   }
 });
 
-app.listen(3000, () => {
-  console.log("🚀 Serveur démarré sur http://localhost:3000");
+app.listen(PORT, () => {
+  console.log(`🚀 Serveur lancé sur le port ${PORT}`);
 });
