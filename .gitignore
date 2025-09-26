@@ -1,2 +1,42 @@
+# ================================
+# Node.js – fichiers à ignorer
+# ================================
+
+# Node modules
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Env files
 .env
-node_modules
+.env.local
+.env.development
+.env.test
+.env.production
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Build / Output
+dist/
+build/
+*.log
+
+# OS generated files
+*.swp
+*.swo
+*.bak
+
+# Render or other cloud platform specific
+.render/
