@@ -1,8 +1,7 @@
-// index.js
-/**
- * AI Shorts Generator – Serveur Node.js
- * Niveau top 0,1% : lisible, sécurisé, maintenable
- */
+// =============================
+// AI Shorts Generator – Serveur Node.js
+// Niveau top 0,1% : lisible, sécurisé, maintenable
+// =============================
 
 require('dotenv').config();
 const express = require('express');
@@ -16,10 +15,11 @@ const PORT = process.env.PORT || 3000;
 
 // Vérification du token Hugging Face
 if (!process.env.HF_TOKEN) {
-  console.error("Erreur critique : HF_TOKEN non défini dans .env !");
+  console.error("❌ Erreur critique : HF_TOKEN non défini dans .env !");
   process.exit(1);
 }
 
+// Instance Hugging Face
 const hf = new HfInference(process.env.HF_TOKEN);
 
 // ================== Middleware ==================
@@ -29,12 +29,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // ================== Routes ==================
 
-// Route principale
+// Route principale : sert le frontend
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Route chat
+// Route chat : reçoit le message utilisateur et retourne la réponse IA
 app.post('/chat', async (req, res) => {
   try {
     const { message } = req.body;
@@ -43,7 +43,7 @@ app.post('/chat', async (req, res) => {
       return res.status(400).json({ error: 'Message invalide.' });
     }
 
-    // Appel à Hugging Face
+    // Appel à Hugging Face pour génération de texte
     const response = await hf.textGeneration({
       model: 'gpt2',           // Remplace par ton modèle préféré
       inputs: message,
@@ -54,8 +54,8 @@ app.post('/chat', async (req, res) => {
     res.json({ reply });
 
   } catch (err) {
-    console.error('Erreur serveur /chat :', err);
-    res.status(500).json({ error: 'Erreur serveur, veuillez réessayer.' });
+    console.error('⚠️ Erreur serveur /chat :', err);
+    res.status(500).json({ error: 'Erreur serveur. Veuillez réessayer.' });
   }
 });
 
