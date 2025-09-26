@@ -1,16 +1,16 @@
 # AI Shorts Generator
 
-**AI Shorts Generator** est une application web moderne qui permet de discuter avec une intelligence artificielle et de générer du contenu court rapidement. Conçue avec **Node.js**, **Express** et **Hugging Face**, cette application offre une interface fluide, responsive et professionnelle pour créer du texte ou du contenu court en temps réel.
+**AI Shorts Generator** est une application web moderne qui permet de discuter avec une intelligence artificielle et de générer du contenu court instantanément. Conçue avec **Node.js**, **Express** et l’API **Hugging Face**, elle offre une interface fluide, responsive et sécurisée.
 
 ---
 
 ## 🚀 Fonctionnalités
 
-- Chat en temps réel avec l’IA via l’API Hugging Face
+- Chat en temps réel avec l’IA via Hugging Face
 - Interface utilisateur moderne et responsive
-- Messages différenciés pour l’utilisateur et l’IA
+- Messages différenciés (utilisateur / bot / erreur)
 - Gestion des erreurs serveur et feedback visuel
-- Extensible pour la génération de contenu vidéo ou texte
+- Extensible pour la génération de contenu texte ou vidéo
 
 ---
 
@@ -21,13 +21,13 @@
 - **Hugging Face Hub** – API pour modèles d’IA
 - **dotenv** – gestion sécurisée des tokens
 - **HTML5 / CSS3 / JavaScript** – frontend interactif
-- **Render** (optionnel) – déploiement cloud
+- **Render** – déploiement cloud recommandé
 
 ---
 
-## 📦 Installation
+## 📦 Installation locale
 
 1. Cloner le projet :
-   ```bash
-   git clone https://github.com/ton-utilisateur/ai-shorts-generator.git
-   cd ai-shorts-generator
+```bash
+git clone https://github.com/ton-utilisateur/ai-shorts-generator.git
+cd ai-shorts-generator
