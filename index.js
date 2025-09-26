@@ -1,46 +1,43 @@
-import express from "express";
-import bodyParser from "body-parser";
-import dotenv from "dotenv";
-import fetch from "node-fetch";
-
-dotenv.config();
+// index.js
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const { HfInference } = require('@huggingface/hub');
+const path = require('path');
 
 const app = express();
-app.use(bodyParser.json());
-
 const PORT = process.env.PORT || 3000;
-const HF_TOKEN = process.env.HF_TOKEN;
 
-// ➡️ Route d’accueil
-app.get("/", (req, res) => {
-  res.send("🚀 Mon API est en ligne et fonctionne !");
-});
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public'))); // sert index.html, script.js, style.css
 
-// ➡️ Exemple de route pour parler à Hugging Face
-app.post("/chat", async (req, res) => {
+// Initialisation Hugging Face
+const hf = new HfInference(process.env.HF_TOKEN);
+
+// Route test / chat
+app.post('/chat', async (req, res) => {
   try {
     const { message } = req.body;
+    if (!message) {
+      return res.status(400).json({ error: 'No message provided' });
+    }
 
-    const response = await fetch(
-      "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${HF_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ inputs: message }),
-      }
-    );
+    const response = await hf.textGeneration({
+      model: 'gpt2', // tu peux remplacer par un modèle Hugging Face de ton choix
+      inputs: message,
+      parameters: { max_new_tokens: 50 }
+    });
 
-    const data = await response.json();
-    res.json(data);
-  } catch (error) {
-    console.error("Erreur :", error);
-    res.status(500).json({ error: "Problème avec Hugging Face" });
+    res.json({ reply: response[0].generated_text });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
+// Démarrage du serveur
 app.listen(PORT, () => {
-  console.log(`🚀 Serveur lancé sur le port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
