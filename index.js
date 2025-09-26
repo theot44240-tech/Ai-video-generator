@@ -1,70 +1,58 @@
-// =============================
-// AI Shorts Generator – Serveur Node.js
-// Niveau top 0,1% : lisible, sécurisé, maintenable
-// =============================
+// ==============================================
+// AI Shorts Generator – index.js
+// Version finale top 0,1% – GitHub → Render Ready
+// ==============================================
 
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const { HfInference } = require('@huggingface/hub');
-const path = require('path');
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { InferenceClient } from '@huggingface/inference';
 
-// ================== Initialisation ==================
+dotenv.config(); // Charge HF_TOKEN et PORT depuis .env
+
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// Vérification du token Hugging Face
-if (!process.env.HF_TOKEN) {
-  console.error("❌ Erreur critique : HF_TOKEN non défini dans .env !");
-  process.exit(1);
-}
-
-// Instance Hugging Face
-const hf = new HfInference(process.env.HF_TOKEN);
-
-// ================== Middleware ==================
+// Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public')); // Sert les fichiers HTML/CSS/JS côté client
 
-// ================== Routes ==================
+// Création du client Hugging Face
+const client = new InferenceClient({ token: process.env.HF_TOKEN });
 
-// Route principale : sert le frontend
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// Route chat : reçoit le message utilisateur et retourne la réponse IA
+// Endpoint principal pour générer du texte depuis l’IA
 app.post('/chat', async (req, res) => {
+  const { message } = req.body;
+
+  if (!message || message.trim() === '') {
+    return res.status(400).json({ error: 'Le message est vide.' });
+  }
+
   try {
-    const { message } = req.body;
-
-    if (!message || typeof message !== 'string') {
-      return res.status(400).json({ error: 'Message invalide.' });
-    }
-
-    // Appel à Hugging Face pour génération de texte
-    const response = await hf.textGeneration({
-      model: 'gpt2',           // Remplace par ton modèle préféré
+    const response = await client.textGeneration({
+      model: 'gpt2',           // Modèle Hugging Face, change si nécessaire
       inputs: message,
-      parameters: { max_new_tokens: 50 }
+      parameters: { max_new_tokens: 100 },
     });
 
-    const reply = response[0]?.generated_text || '';
-    res.json({ reply });
-
+    res.json({ reply: response.generated_text });
   } catch (err) {
-    console.error('⚠️ Erreur serveur /chat :', err);
+    console.error('Erreur Hugging Face :', err);
     res.status(500).json({ error: 'Erreur serveur. Veuillez réessayer.' });
   }
 });
 
-// Gestion des routes non trouvées
-app.use((req, res) => {
-  res.status(404).json({ error: 'Route non trouvée.' });
-});
+// Port dynamique pour Render / GitHub → Render
+const PORT = process.env.PORT || 3000;
 
-// ================== Démarrage serveur ==================
+// Gestion d’erreur pour port déjà utilisé
 app.listen(PORT, () => {
   console.log(`🚀 Serveur démarré sur le port ${PORT}`);
+  console.log('💡 Endpoint /chat prêt à recevoir des messages.');
+}).on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`⚠️ Le port ${PORT} est déjà utilisé.`);
+  } else {
+    console.error('Erreur serveur :', err);
+  }
 });
