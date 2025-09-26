@@ -1,6 +1,9 @@
-/* style.css */
+/* ============================= */
+/* AI Shorts Generator – Style.css */
+/* Niveau top 0,1% – Propre, responsive, maintenable */
+/* ============================= */
 
-/* ==== Reset & base ==== */
+/* ==== Reset & Base ==== */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -65,7 +68,7 @@ main {
   gap: 0.75rem;
 }
 
-/* Messages styles */
+/* ==== Messages ==== */
 .message {
   padding: 0.75rem 1rem;
   border-radius: 12px;
@@ -97,7 +100,7 @@ main {
   align-self: flex-start;
 }
 
-/* Chat input form */
+/* ==== Chat Form ==== */
 .chat-form {
   display: flex;
   padding: 0.75rem 1rem;
