@@ -1,30 +1,41 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Mon IA 🚀</title>
-  </head>
-  <body>
-    <h1>Bienvenue sur mon IA 🚀</h1>
-    <input id="message" type="text" placeholder="Écris-moi un message" />
-    <button onclick="sendMessage()">Envoyer</button>
-    <div id="response"></div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Shorts Generator</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.ico">
+</head>
+<body>
+  <header>
+    <h1>AI Shorts Generator</h1>
+    <p>Discute avec notre intelligence artificielle et génère du contenu court facilement !</p>
+  </header>
 
-    <script>
-      async function sendMessage() {
-        const message = document.getElementById("message").value;
+  <main>
+    <section class="chat-section">
+      <div id="chat-container" class="chat-container">
+        <!-- Messages apparaîtront ici -->
+      </div>
 
-        const res = await fetch("/api/chat", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ message }),
-        });
+      <form id="chat-form" class="chat-form">
+        <input
+          type="text"
+          id="chat-input"
+          placeholder="Écris ton message..."
+          autocomplete="off"
+          required
+        />
+        <button type="submit">Envoyer</button>
+      </form>
+    </section>
+  </main>
 
-        const data = await res.json();
-        document.getElementById("response").innerText = data.reply || data.error;
-      }
-    </script>
-  </body>
+  <footer>
+    <p>© 2025 AI Shorts Generator. Tous droits réservés.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
 </html>
