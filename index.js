@@ -1,58 +1,75 @@
-// ==============================================
-// AI Shorts Generator – index.js
-// Version finale top 0,1% – GitHub → Render Ready
-// ==============================================
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import { HfInference } from "@huggingface/inference";
 
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import { InferenceClient } from '@huggingface/inference';
+// Charger les variables d'environnement
+dotenv.config();
 
-dotenv.config(); // Charge HF_TOKEN et PORT depuis .env
+// Initialisation HuggingFace avec ton token (Render → "Environment Variables")
+const HF_TOKEN = process.env.HF_TOKEN;
+if (!HF_TOKEN) {
+  console.error("❌ Erreur : la variable d'environnement HF_TOKEN est manquante.");
+  process.exit(1);
+}
+const hf = new HfInference(HF_TOKEN);
 
+// Initialisation serveur Express
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 // Middlewares
 app.use(cors());
-app.use(express.json());
-app.use(express.static('public')); // Sert les fichiers HTML/CSS/JS côté client
+app.use(express.json({ limit: "10mb" })); // support JSON large
 
-// Création du client Hugging Face
-const client = new InferenceClient({ token: process.env.HF_TOKEN });
+// =============== ROUTES =============== //
 
-// Endpoint principal pour générer du texte depuis l’IA
-app.post('/chat', async (req, res) => {
-  const { message } = req.body;
+// Test de vie du serveur
+app.get("/", (req, res) => {
+  res.json({
+    status: "✅ OK",
+    message: "Bienvenue sur AI Shorts Generator 🚀",
+    docs: "/api/generate"
+  });
+});
 
-  if (!message || message.trim() === '') {
-    return res.status(400).json({ error: 'Le message est vide.' });
-  }
-
+// Endpoint principal pour générer un texte
+app.post("/api/generate", async (req, res) => {
   try {
-    const response = await client.textGeneration({
-      model: 'gpt2',           // Modèle Hugging Face, change si nécessaire
-      inputs: message,
-      parameters: { max_new_tokens: 100 },
+    const { prompt } = req.body;
+
+    if (!prompt || prompt.trim().length === 0) {
+      return res.status(400).json({ error: "❌ Le champ 'prompt' est requis." });
+    }
+
+    console.log(`📝 Prompt reçu : "${prompt}"`);
+
+    // Appel Hugging Face
+    const response = await hf.textGeneration({
+      model: "gpt2", // ⚡️ tu peux changer pour un modèle plus puissant
+      inputs: prompt,
+      parameters: {
+        max_new_tokens: 200,
+        temperature: 0.7,
+        top_p: 0.9
+      }
     });
 
-    res.json({ reply: response.generated_text });
-  } catch (err) {
-    console.error('Erreur Hugging Face :', err);
-    res.status(500).json({ error: 'Erreur serveur. Veuillez réessayer.' });
+    console.log("✅ Réponse Hugging Face envoyée.");
+    res.json({ result: response.generated_text });
+
+  } catch (error) {
+    console.error("❌ Erreur dans /api/generate :", error);
+    res.status(500).json({
+      error: "Erreur interne du serveur.",
+      details: error.message
+    });
   }
 });
 
-// Port dynamique pour Render / GitHub → Render
-const PORT = process.env.PORT || 3000;
+// ====================================== //
 
-// Gestion d’erreur pour port déjà utilisé
+// Démarrage du serveur
 app.listen(PORT, () => {
-  console.log(`🚀 Serveur démarré sur le port ${PORT}`);
-  console.log('💡 Endpoint /chat prêt à recevoir des messages.');
-}).on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`⚠️ Le port ${PORT} est déjà utilisé.`);
-  } else {
-    console.error('Erreur serveur :', err);
-  }
+  console.log(`🚀 Serveur AI Shorts Generator lancé sur http://localhost:${PORT}`);
 });
