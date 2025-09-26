@@ -1,17 +1,15 @@
 // public/script.js
-
 /**
  * AI Shorts Generator – Frontend Chat
- * Niveau top 0,1% : lisible, maintenable et extensible
+ * Niveau top 0,1% : lisible, sécurisé et maintenable
  */
 
-// Sélection des éléments DOM
 const form = document.querySelector('#chat-form');
 const input = document.querySelector('#chat-input');
 const chatContainer = document.querySelector('#chat-container');
 
 /**
- * Affiche un message dans le chat
+ * Ajoute un message dans le chat
  * @param {string} content - Texte du message
  * @param {string} sender - 'user', 'bot' ou 'error'
  */
@@ -24,9 +22,9 @@ function addMessage(content, sender = 'user') {
 }
 
 /**
- * Envoie un message au serveur /chat
- * @param {string} message - Texte à envoyer
- * @returns {Promise<string|null>} - Réponse du bot
+ * Envoie un message au serveur pour obtenir la réponse IA
+ * @param {string} message - Message utilisateur
+ * @returns {Promise<string|null>} - Réponse du bot ou null en cas d'erreur
  */
 async function sendMessage(message) {
   try {
@@ -35,18 +33,17 @@ async function sendMessage(message) {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
-        // Ne mettez jamais le token côté frontend en prod !
+        // Pas de token côté frontend : sécurité maximale
       },
       body: JSON.stringify({ message })
     });
 
-    if (!response.ok) {
-      throw new Error(`Erreur serveur : ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`Erreur serveur : ${response.status}`);
 
     const data = await response.json();
-    addMessage(data.reply, 'bot'); // afficher la réponse
+    addMessage(data.reply, 'bot'); // afficher la réponse IA
     return data.reply;
+
   } catch (err) {
     console.error('Erreur fetch /chat:', err);
     addMessage('Erreur serveur. Veuillez réessayer.', 'error');
@@ -54,15 +51,17 @@ async function sendMessage(message) {
   }
 }
 
-// Gestion du formulaire
+/**
+ * Gestion de l'envoi via formulaire
+ */
 form.addEventListener('submit', (e) => {
   e.preventDefault();
   const userMessage = input.value.trim();
   if (!userMessage) return;
-  addMessage(userMessage, 'user');  // afficher le message utilisateur
+  addMessage(userMessage, 'user');  // Affiche le message utilisateur
   input.value = '';
-  sendMessage(userMessage);         // envoyer au serveur
+  sendMessage(userMessage);         // Envoie au serveur
 });
 
-// Exemple de test automatique (peut être retiré en prod)
-// sendMessage("Bonjour, peux-tu me répondre ?");
+// Optionnel : message de bienvenue
+addMessage('Bienvenue ! Pose ta question à l\'IA.', 'bot');
