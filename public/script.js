@@ -1,36 +1,60 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.querySelector("form");
-  const input = document.querySelector("input");
-  const result = document.createElement("p");
-  document.body.appendChild(result);
+// script.js
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const message = input.value.trim();
+// Sélection des éléments DOM
+const form = document.querySelector('#chat-form');
+const input = document.querySelector('#chat-input');
+const chatContainer = document.querySelector('#chat-container');
 
-    if (!message) return;
+// Fonction pour afficher un message dans le chat
+function addMessage(content, sender = 'user') {
+  const messageEl = document.createElement('div');
+  messageEl.classList.add('message', sender);
+  messageEl.textContent = content;
+  chatContainer.appendChild(messageEl);
+  chatContainer.scrollTop = chatContainer.scrollHeight; // scroll automatique
+}
 
-    result.textContent = "⏳ L’IA réfléchit...";
+// Fonction pour afficher un message "loading"
+function addLoadingMessage() {
+  const loadingEl = document.createElement('div');
+  loadingEl.classList.add('message', 'loading');
+  loadingEl.textContent = '...';
+  chatContainer.appendChild(loadingEl);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+  return loadingEl;
+}
 
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ message }),
-      });
+// Gestion de la soumission du formulaire
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-      const data = await response.json();
+  const userMessage = input.value.trim();
+  if (!userMessage) return;
 
-      if (data.reply) {
-        result.textContent = `🤖 ${data.reply}`;
-      } else {
-        result.textContent = `⚠️ Erreur: ${data.error || "aucune réponse"}`;
-      }
-    } catch (error) {
-      console.error("Erreur côté client:", error);
-      result.textContent = "❌ Erreur de connexion au serveur";
+  addMessage(userMessage, 'user'); // afficher le message utilisateur
+  input.value = '';
+
+  const loadingEl = addLoadingMessage(); // message de chargement
+
+  try {
+    const response = await fetch('/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: userMessage })
+    });
+
+    loadingEl.remove(); // enlever le message de chargement
+
+    if (!response.ok) {
+      addMessage('Erreur serveur. Veuillez réessayer.', 'error');
+      return;
     }
-  });
+
+    const data = await response.json();
+    addMessage(data.reply, 'bot'); // afficher la réponse du bot
+  } catch (err) {
+    console.error(err);
+    loadingEl.remove();
+    addMessage('Impossible de contacter le serveur.', 'error');
+  }
 });
