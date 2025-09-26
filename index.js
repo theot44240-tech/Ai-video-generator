@@ -1,70 +1,79 @@
-// =============================
-// AI Shorts Generator – Serveur Node.js
-// Niveau top 0,1% : lisible, sécurisé, maintenable
-// =============================
+// ==============================
+// AI Shorts Generator – index.js
+// Backend Node.js Express
+// Optimisé top 0,1% – prêt pour CodeSpaces / Render
+// ==============================
 
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const { HfInference } = require('@huggingface/hub');
-const path = require('path');
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { InferenceClient } from '@huggingface/inference';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-// ================== Initialisation ==================
+// ==============================
+// Chargement des variables d'environnement
+// ==============================
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ==============================
 // Vérification du token Hugging Face
+// ==============================
 if (!process.env.HF_TOKEN) {
-  console.error("❌ Erreur critique : HF_TOKEN non défini dans .env !");
+  console.error("❌ HF_TOKEN non défini dans .env !");
   process.exit(1);
 }
 
-// Instance Hugging Face
-const hf = new HfInference(process.env.HF_TOKEN);
+// ==============================
+// Initialisation du client Hugging Face
+// ==============================
+const client = new InferenceClient({ apiKey: process.env.HF_TOKEN });
 
-// ================== Middleware ==================
+// ==============================
+// Middleware
+// ==============================
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ================== Routes ==================
-
-// Route principale : sert le frontend
+// ==============================
+// Route principale pour servir le frontend
+// ==============================
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Route chat : reçoit le message utilisateur et retourne la réponse IA
+// ==============================
+// Route API pour le chat
+// ==============================
 app.post('/chat', async (req, res) => {
   try {
     const { message } = req.body;
+    if (!message) return res.status(400).json({ error: "Message manquant" });
 
-    if (!message || typeof message !== 'string') {
-      return res.status(400).json({ error: 'Message invalide.' });
-    }
-
-    // Appel à Hugging Face pour génération de texte
-    const response = await hf.textGeneration({
-      model: 'gpt2',           // Remplace par ton modèle préféré
+    // Génération de texte via Hugging Face
+    const response = await client.textGeneration({
+      model: "distilgpt2", // léger et rapide pour CodeSpaces / Render
       inputs: message,
       parameters: { max_new_tokens: 50 }
     });
 
-    const reply = response[0]?.generated_text || '';
-    res.json({ reply });
-
+    res.json({ reply: response[0].generated_text });
   } catch (err) {
-    console.error('⚠️ Erreur serveur /chat :', err);
-    res.status(500).json({ error: 'Erreur serveur. Veuillez réessayer.' });
+    console.error("⚠️ Erreur serveur :", err);
+    res.status(500).json({ error: "Erreur serveur. Veuillez réessayer." });
   }
 });
 
-// Gestion des routes non trouvées
-app.use((req, res) => {
-  res.status(404).json({ error: 'Route non trouvée.' });
-});
-
-// ================== Démarrage serveur ==================
+// ==============================
+// Démarrage du serveur
+// ==============================
 app.listen(PORT, () => {
-  console.log(`🚀 Serveur démarré sur le port ${PORT}`);
+  console.log(`🚀 Serveur AI Shorts Generator démarré sur le port ${PORT}`);
 });
