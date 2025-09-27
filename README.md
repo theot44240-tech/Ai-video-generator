@@ -1,25 +1,24 @@
 # AI Shorts Generator 🚀
 
-**AI Shorts Generator** est une application web moderne permettant de générer du contenu court et interactif via une IA, basée sur le modèle **tiiuae/falcon-7b-instruct** de Hugging Face.  
+**AI Shorts Generator** est une application web moderne permettant de poser des questions à une IA et de générer instantanément des vidéos courtes ou du contenu basé sur vos prompts.  
 
-L’application est optimisée pour Node.js, prête à déployer sur Render ou tout autre serveur compatible.
-
----
-
-## ⚡ Fonctionnalités
-
-- Génération de texte court à partir de prompts utilisateur.
-- Interface simple et responsive.
-- API prête à l’emploi pour intégration dans d’autres applications.
-- Gestion sécurisée des tokens Hugging Face via `.env`.
-- Optimisé pour un déploiement rapide et stable.
+Le projet utilise le modèle **[tiiuae/falcon-7b-instruct](https://huggingface.co/tiiuae/falcon-7b-instruct)** via l’API Hugging Face pour générer du texte intelligemment et rapidement.
 
 ---
 
-## 🛠 Installation
+## 🚀 Fonctionnalités
 
-1. Cloner le dépôt :
+- Posez une question ou un prompt à l’IA.
+- Génération instantanée de contenus courts (“shorts”).
+- Interface web simple et réactive.
+- Compatible avec **Render**, **Codespaces** et tout serveur Node.js.
+- Optimisé pour performance et stabilité.
 
+---
+
+## ⚡ Installation
+
+1. Clonez le projet :  
 ```bash
-git clone https://github.com/ton-utilisateur/ai-shorts-generator.git
-cd ai-shorts-generator
+git clone https://github.com/TON_USERNAME/Ai-video-generator.git
+cd Ai-video-generator
