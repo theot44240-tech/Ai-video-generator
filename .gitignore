@@ -1,25 +1,39 @@
-# =====================================
-# AI Shorts Generator – Configuration
-# Optimisé top 0,1% – Compatible GPT-2
-# =====================================
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
 
-# Hugging Face API Token (obligatoire)
-HF_TOKEN=ton_token_huggingface_ici
+# Environment variables
+.env
 
-# Port du serveur (Render choisira automatiquement le PORT si défini par l'environnement)
-PORT=3000
+# Logs
+logs/
+*.log
+pids/
+*.pid
+*.seed
+*.pid.lock
 
-# Modèle utilisé pour la génération de texte
-MODEL=tiiuae/gpt2
+# OS files
+.DS_Store
+Thumbs.db
 
-# Temps max d'attente pour la génération de texte (en secondes)
-TIMEOUT=30
+# Render build artifacts
+/render/
 
-# Paramètres GPT-2 (optionnels pour affiner les résultats)
-TEMPERATURE=0.7
-MAX_TOKENS=150
-TOP_P=0.9
-TOP_K=50
+# VSCode
+.vscode/
 
-# URL de callback si nécessaire (exemple : webhook ou API externe)
-CALLBACK_URL=
+# Public uploads or generated media
+/public/uploads/
+/public/generated/
+
+# Test coverage
+coverage/
+
+# Temporary files
+tmp/
+temp/
