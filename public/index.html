@@ -3,39 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="AI Shorts Generator - Génère des contenus vidéo courts via IA.">
-  <meta name="author" content="Ton Nom">
   <title>AI Shorts Generator 🚀</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/png" href="favicon.png">
 </head>
 <body>
-  <header>
+  <div class="container">
     <h1>AI Shorts Generator 🚀</h1>
-    <p>Bienvenue ! Pose ta question à l'IA et génère du contenu court automatiquement.</p>
-  </header>
-
-  <main>
-    <section id="chat-section">
-      <form id="chat-form">
-        <input type="text" id="user-message" placeholder="Écris ta question ici..." required autocomplete="off">
-        <button type="submit">Envoyer</button>
-      </form>
-      <div id="chat-log"></div>
-    </section>
-
-    <section id="shorts-section">
-      <h2>Contenu généré :</h2>
-      <div id="shorts-container">
-        <!-- Les shorts vidéo générés par l'IA apparaîtront ici -->
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <p>© 2025 AI Shorts Generator. Tous droits réservés.</p>
-  </footer>
-
-  <script src="script.js" type="module"></script>
+    <textarea id="prompt" placeholder="Pose ta question à l'IA..."></textarea>
+    <button id="generateBtn">Générer</button>
+    <pre id="result"></pre>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
