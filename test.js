@@ -1,32 +1,30 @@
-import dotenv from 'dotenv';
-dotenv.config();
-import fetch from 'node-fetch';
+// test.js – AI Shorts Generator
+// Version finale optimisée pour Node.js / Render
+// Modèle : tiiuae/falcon-7b-instruct
 
-const API_URL = process.env.API_URL || 'http://localhost:3000/api/generate';
-const TEST_PROMPT = 'Bonjour, génère un short vidéo inspirant sur l\'IA.';
+import 'dotenv/config';
+import { InferenceClient } from '@huggingface/inference';
 
-async function testAPI() {
+const client = new InferenceClient(process.env.HF_TOKEN);
+
+async function main() {
   try {
-    console.log(`🚀 Envoi d'une requête à l'API: ${API_URL}`);
-    
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: TEST_PROMPT })
+    // Texte de test
+    const inputText = "Bonjour IA, peux-tu générer un court résumé amusant ?";
+
+    // Appel au modèle Falcon 7B Instruct
+    const response = await client.textGeneration({
+      model: "tiiuae/falcon-7b-instruct",
+      inputs: inputText,
+      parameters: { max_new_tokens: 100 }
     });
 
-    if (!response.ok) {
-      console.error(`❌ Erreur HTTP: ${response.status} ${response.statusText}`);
-      return;
-    }
-
-    const data = await response.json();
-    console.log('✅ Réponse de l\'API:');
-    console.log(JSON.stringify(data, null, 2));
-
+    console.log("=== Résultat ===");
+    console.log(response.generated_text);
   } catch (error) {
-    console.error('🔥 Erreur lors du test de l\'API:', error.message);
+    console.error("❌ Une erreur est survenue :", error);
   }
 }
 
-testAPI();
+// Exécution du test
+main();
