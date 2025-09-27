@@ -1,67 +1,77 @@
-// public/script.js
-/**
- * AI Shorts Generator – Frontend Chat
- * Niveau top 0,1% : lisible, sécurisé et maintenable
- */
+// script.js – AI Shorts Generator (Top 0,1%)
+// Assure une communication fluide avec le backend Node.js / Hugging Face
 
-const form = document.querySelector('#chat-form');
-const input = document.querySelector('#chat-input');
-const chatContainer = document.querySelector('#chat-container');
+const chatForm = document.getElementById('chat-form');
+const userMessageInput = document.getElementById('user-message');
+const chatLog = document.getElementById('chat-log');
+const shortsContainer = document.getElementById('shorts-container');
 
-/**
- * Ajoute un message dans le chat
- * @param {string} content - Texte du message
- * @param {string} sender - 'user', 'bot' ou 'error'
- */
-function addMessage(content, sender = 'user') {
-  const messageEl = document.createElement('div');
-  messageEl.classList.add('message', sender);
-  messageEl.textContent = content;
-  chatContainer.appendChild(messageEl);
-  chatContainer.scrollTop = chatContainer.scrollHeight; // scroll automatique
+// Fonction pour afficher un message dans le chat
+function addMessage(sender, text) {
+  const messageDiv = document.createElement('div');
+  messageDiv.classList.add('message', sender);
+  messageDiv.textContent = text;
+  chatLog.appendChild(messageDiv);
+  chatLog.scrollTop = chatLog.scrollHeight;
 }
 
-/**
- * Envoie un message au serveur pour obtenir la réponse IA
- * @param {string} message - Message utilisateur
- * @returns {Promise<string|null>} - Réponse du bot ou null en cas d'erreur
- */
+// Fonction pour afficher un short généré (si URL vidéo ou texte)
+function addShort(content, isVideo = false) {
+  const shortDiv = document.createElement('div');
+  shortDiv.classList.add('short');
+
+  if (isVideo) {
+    const video = document.createElement('video');
+    video.src = content;
+    video.controls = true;
+    video.autoplay = false;
+    shortDiv.appendChild(video);
+  } else {
+    shortDiv.textContent = content;
+  }
+
+  shortsContainer.prepend(shortDiv);
+}
+
+// Fonction principale pour envoyer le message à l'API
 async function sendMessage(message) {
+  addMessage('user', message);
+
   try {
-    const response = await fetch('/chat', {
+    const response = await fetch('/api/generate', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-        // Pas de token côté frontend : sécurité maximale
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({ message })
     });
 
-    if (!response.ok) throw new Error(`Erreur serveur : ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`Erreur serveur : ${response.status}`);
+    }
 
     const data = await response.json();
-    addMessage(data.reply, 'bot'); // afficher la réponse IA
-    return data.reply;
 
+    if (data.reply) {
+      addMessage('ai', data.reply);
+      if (data.short) {
+        // Affiche le short généré (si présent)
+        addShort(data.short, data.isVideo);
+      }
+    } else {
+      addMessage('ai', "⚠️ Aucun retour de l'IA. Réessaye.");
+    }
   } catch (err) {
-    console.error('Erreur fetch /chat:', err);
-    addMessage('Erreur serveur. Veuillez réessayer.', 'error');
-    return null;
+    console.error('Erreur fetch /api/generate:', err);
+    addMessage('ai', 'Erreur serveur. Veuillez réessayer.');
   }
 }
 
-/**
- * Gestion de l'envoi via formulaire
- */
-form.addEventListener('submit', (e) => {
+// Gestion de l’envoi du formulaire
+chatForm.addEventListener('submit', e => {
   e.preventDefault();
-  const userMessage = input.value.trim();
-  if (!userMessage) return;
-  addMessage(userMessage, 'user');  // Affiche le message utilisateur
-  input.value = '';
-  sendMessage(userMessage);         // Envoie au serveur
+  const message = userMessageInput.value.trim();
+  if (!message) return;
+  sendMessage(message);
+  userMessageInput.value = '';
 });
-
-// Optionnel : message de bienvenue
-addMessage('Bienvenue ! Pose ta question à l\'IA.', 'bot');
