@@ -1,7 +1,7 @@
 {
   "name": "ai-shorts-generator",
   "version": "1.0.0",
-  "description": "AI Shorts Generator - Application web optimisée (top 0,1%) pour générer et discuter avec une IA via Hugging Face. Déployable sur Render, Codespaces et tout serveur Node.js.",
+  "description": "Application web moderne pour générer des shorts vidéo IA via Hugging Face.",
   "type": "module",
   "main": "index.js",
   "scripts": {
@@ -13,12 +13,11 @@
   "keywords": [
     "AI",
     "HuggingFace",
-    "Shorts",
-    "Generator",
-    "Chatbot",
     "Node.js",
-    "Render",
-    "Codespaces"
+    "Chatbot",
+    "Shorts",
+    "WebApp",
+    "Mistral7B"
   ],
   "author": "Ton Nom",
   "license": "MIT",
@@ -28,11 +27,11 @@
   "dependencies": {
     "@huggingface/inference": "^4.9.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.4.0",
     "express": "^4.18.2"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1",
-    "eslint": "^8.57.0"
+    "nodemon": "^3.0.2",
+    "eslint": "^8.50.0"
   }
 }
