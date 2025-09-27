@@ -1,16 +1,45 @@
+// test.js – AI Shorts Generator (Top 0,1% optimisation)
+// Modèle : distilgpt2
+// Déploiement : Render / Node.js
+
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { InferenceClient } from '@huggingface/inference';
+import express from 'express';
+import bodyParser from 'body-parser';
+import { HfInference } from '@huggingface/inference';
 
-// Initialise le client Hugging Face
-const hf = new InferenceClient({ apiKey: process.env.HF_TOKEN });
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-// Fonction pour générer un texte avec GPT-2
-export async function generateText(prompt) {
+// Initialisation Hugging Face avec token
+const hf = new HfInference(process.env.HF_TOKEN);
+
+// Middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Route principale pour tester la génération
+app.get('/', (req, res) => {
+  res.json({
+    status: '✅ OK',
+    message: 'Bienvenue sur AI Shorts Generator 🚀',
+    docs: '/api/generate'
+  });
+});
+
+// Route API pour générer du texte (short)
+app.post('/api/generate', async (req, res) => {
   try {
-    const result = await hf.textGeneration({
-      model: 'gpt2',
+    const { prompt } = req.body;
+
+    if (!prompt) {
+      return res.status(400).json({ status: '❌ Error', message: 'Prompt manquant.' });
+    }
+
+    // Appel API Hugging Face avec distilgpt2
+    const output = await hf.textGeneration({
+      model: 'distilgpt2',
       inputs: prompt,
       parameters: {
         max_new_tokens: 150,
@@ -18,19 +47,20 @@ export async function generateText(prompt) {
       }
     });
 
-    // Retourne le texte généré
-    return result.generated_text || '❌ Aucun texte généré.';
-  } catch (error) {
-    console.error('❌ Erreur API :', error);
-    return `❌ Erreur API : ${error.message}`;
-  }
-}
+    res.json({
+      status: '✅ OK',
+      prompt: prompt,
+      result: output.generated_text
+    });
 
-// Exemple d'utilisation en standalone
-if (import.meta.url === `file://${process.argv[1]}`) {
-  const prompt = process.argv[2] || "Bonjour IA, écris un short vidéo sur l'IA !";
-  generateText(prompt).then((output) => {
-    console.log('Prompt :', prompt);
-    console.log('Résultat :', output);
-  });
-}
+  } catch (err) {
+    console.error('❌ Erreur API :', err);
+    res.status(500).json({ status: '❌ Error', message: 'Erreur serveur.', details: err.message });
+  }
+});
+
+// Lancement du serveur
+app.listen(PORT, () => {
+  console.log(`🚀 Serveur AI Shorts Generator démarré sur le port ${PORT}`);
+  console.log(`🌐 Accessible sur : http://localhost:${PORT}`);
+});
