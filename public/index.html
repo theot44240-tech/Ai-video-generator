@@ -1,29 +1,33 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Shorts Generator 🚀</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Shorts Generator 🚀</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
     <header>
-      <h1>AI Shorts Generator 🚀</h1>
-      <p>Pose ta question à l'IA et génère des shorts instantanément !</p>
+        <h1>AI Shorts Generator 🚀</h1>
+        <p>Pose ta question à l'IA et génère des shorts instantanément !</p>
     </header>
 
     <main>
-      <textarea id="promptInput" placeholder="Écris ton prompt ici..." rows="4"></textarea>
-      <button id="generateBtn">Générer</button>
-      <div id="result" class="result">Résultat :</div>
+        <section class="input-section">
+            <textarea id="prompt" placeholder="Écris ton prompt ici..." rows="5"></textarea>
+            <button id="generateBtn">Générer</button>
+        </section>
+
+        <section class="result-section">
+            <h2>Résultat :</h2>
+            <pre id="result">Aucun résultat pour le moment.</pre>
+        </section>
     </main>
 
     <footer>
-      <p>© 2025 AI Shorts Generator | Modèle utilisé : tiiuae/falcon-7b-instruct</p>
+        <p>© 2025 AI Shorts Generator | Modèle utilisé : GPT-2</p>
     </footer>
-  </div>
 
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
