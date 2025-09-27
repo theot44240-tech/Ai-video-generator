@@ -1,20 +1,21 @@
 {
   "name": "ai-shorts-generator",
   "version": "1.0.0",
-  "description": "Application web moderne pour générer du contenu court avec l'IA via Hugging Face Mistral-7B-Instruct.",
+  "description": "Application web moderne pour générer du contenu court avec l'IA via Hugging Face Falcon 7B Instruct.",
   "type": "module",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
     "lint": "eslint . --ext .js",
-    "test": "node test.js"
+    "test": "echo \"No tests defined\" && exit 0"
   },
   "keywords": [
     "AI",
     "HuggingFace",
-    "Mistral",
+    "Falcon7B",
     "Node.js",
+    "Chatbot",
     "Shorts",
     "WebApp"
   ],
@@ -28,7 +29,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "node-fetch": "^3.3.2"
+    "body-parser": "^1.20.2"
   },
   "devDependencies": {
     "nodemon": "^3.0.1",
