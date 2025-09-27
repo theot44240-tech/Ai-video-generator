@@ -7,12 +7,61 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
+  <header>
     <h1>AI Shorts Generator 🚀</h1>
-    <textarea id="prompt" placeholder="Pose ta question à l'IA..."></textarea>
-    <button id="generateBtn">Générer</button>
-    <pre id="result"></pre>
-  </div>
+    <p>Pose ta question à l'IA et génère des shorts instantanément !</p>
+  </header>
+
+  <main>
+    <section class="generator">
+      <textarea id="prompt" placeholder="Écris ton prompt ici..."></textarea>
+      <button id="generateBtn">Générer</button>
+    </section>
+
+    <section class="result">
+      <h2>Résultat :</h2>
+      <pre id="output"></pre>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 AI Shorts Generator | Modèle utilisé : <strong>tiiuae/falcon-7b-instruct</strong></p>
+  </footer>
+
   <script src="script.js"></script>
+  <script>
+    // Optimisation top 0,1% : frontend léger et réactif
+    const generateBtn = document.getElementById("generateBtn");
+    const promptInput = document.getElementById("prompt");
+    const output = document.getElementById("output");
+
+    generateBtn.addEventListener("click", async () => {
+      const prompt = promptInput.value.trim();
+      if (!prompt) {
+        output.textContent = "⚠️ Veuillez entrer un prompt !";
+        return;
+      }
+
+      output.textContent = "⏳ Génération en cours...";
+
+      try {
+        const response = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Erreur serveur, réessayez plus tard.");
+        }
+
+        const data = await response.json();
+        output.textContent = data.result || "❌ Aucun résultat généré.";
+      } catch (err) {
+        console.error(err);
+        output.textContent = "❌ Erreur lors de la génération.";
+      }
+    });
+  </script>
 </body>
 </html>
