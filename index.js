@@ -1,67 +1,63 @@
-// index.js – AI Shorts Generator 🚀
-// Top 0,1% optimisation pour Node.js / Render
+// index.js - AI Shorts Generator 🚀 (GPT-2)
 
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import fetch from "node-fetch";
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import bodyParser from 'body-parser';
+import { InferenceClient } from '@huggingface/inference';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const HF_TOKEN = process.env.HF_TOKEN;
 
 // Middleware
 app.use(cors());
-app.use(express.json());
-app.use(express.static("public"));
+app.use(bodyParser.json());
+app.use(express.static('public'));
 
-// Endpoint racine
-app.get("/", (req, res) => {
-  res.json({
+// Hugging Face Client
+const hf = new InferenceClient({ apiKey: process.env.HF_TOKEN });
+
+// Route racine
+app.get('/', (req, res) => {
+  res.send({
     status: "✅ OK",
     message: "Bienvenue sur AI Shorts Generator 🚀",
     docs: "/api/generate"
   });
 });
 
-// Endpoint de génération
-app.post("/api/generate", async (req, res) => {
+// Endpoint pour générer du texte avec GPT-2
+app.post('/api/generate', async (req, res) => {
+  const { prompt, max_tokens } = req.body;
+
+  if (!prompt) {
+    return res.status(400).json({ status: "❌ Error", message: "Prompt manquant." });
+  }
+
   try {
-    const { prompt } = req.body;
-    if (!prompt) return res.status(400).json({ error: "Prompt manquant." });
-
-    const response = await fetch("https://api-inference.huggingface.co/models/tiiuae/falcon-7b-instruct", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${HF_TOKEN}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ inputs: prompt })
+    const output = await hf.textGeneration({
+      model: "gpt2",
+      inputs: prompt,
+      parameters: {
+        max_new_tokens: max_tokens || 100
+      }
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      return res.status(response.status).json({ error: errorText });
-    }
-
-    const data = await response.json();
-
-    // Renvoi de la réponse du modèle
     res.json({
-      status: "✅ OK",
+      status: "✅ Success",
       prompt,
-      result: data
+      result: output[0].generated_text
     });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Erreur serveur, veuillez réessayer." });
+  } catch (error) {
+    console.error("❌ Erreur API :", error);
+    res.status(500).json({ status: "❌ Error", message: error.message });
   }
 });
 
 // Démarrage du serveur
 app.listen(PORT, () => {
-  console.log(`🚀 Serveur lancé sur le port ${PORT}`);
+  console.log(`🚀 Serveur AI Shorts Generator démarré sur le port ${PORT}`);
+  console.log(`Disponible sur : http://localhost:${PORT}`);
 });
