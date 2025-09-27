@@ -1,44 +1,49 @@
 # =========================================
-# AI Shorts Generator – Fichiers à ignorer
-# Optimisé pour Node.js / Render / GitHub
-# Modèle IA : tiiuae/falcon-7b-instruct
+# AI Shorts Generator - Fichier .gitignore
+# Compatible Node.js, Render, Codespaces
 # =========================================
 
-# Node.js modules
+# Node modules
 node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files
+.env
+.env.local
+.env.*.local
 
 # Logs
 logs/
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+*.log.*
+/logs
 
-# Environnement
-.env
+# OS files
+.DS_Store
+Thumbs.db
 
-# Dépendances lock files
-package-lock.json
-yarn.lock
+# Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
 
-# Build / Distribution
+# Build output
 dist/
 build/
 out/
 
-# Systèmes et IDE
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Cache et fichiers temporaires
+# Temporary files
+tmp/
+temp/
 .cache/
 *.tmp
-*.temp
 
-# Hugging Face / AI
-hf_model_cache/
-hf_token_cache/
+# Hugging Face model cache (optional, can be large)
+~/.cache/huggingface/
+
+# Render deploy files (optional)
+*.render.yaml
