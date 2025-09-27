@@ -1,28 +1,33 @@
 {
   "name": "ai-shorts-generator",
   "version": "1.0.0",
-  "description": "AI Shorts Generator 🚀 - Génère des shorts vidéos/textuels avec GPT-2",
+  "description": "Générateur de shorts AI utilisant distilgpt2 – rapide, léger et optimisé",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "test": "node test.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ton-username/ai-shorts-generator.git"
-  },
-  "author": "Ton Nom",
+  "keywords": [
+    "AI",
+    "shorts",
+    "HuggingFace",
+    "distilgpt2",
+    "text-generation",
+    "Node.js",
+    "Render"
+  ],
+  "author": "ton_nom_ici",
   "license": "MIT",
   "dependencies": {
-    "@huggingface/inference": "^4.9.0",
+    "@huggingface/inference": "^0.2.6",
     "body-parser": "^1.20.2",
-    "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "nodemon": "^3.0.3"
   },
   "engines": {
     "node": ">=18.0.0"
