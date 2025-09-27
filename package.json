@@ -1,7 +1,7 @@
 {
   "name": "ai-shorts-generator",
   "version": "1.0.0",
-  "description": "Application web moderne pour générer du contenu court avec l'IA via Hugging Face Falcon 7B Instruct.",
+  "description": "Générateur de shorts vidéo et texte via IA avec Hugging Face tiiuae/falcon-7b-instruct.",
   "type": "module",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
   "keywords": [
     "AI",
     "HuggingFace",
-    "Falcon7B",
+    "Falcon",
     "Node.js",
     "Chatbot",
     "Shorts",
@@ -29,10 +29,10 @@
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "body-parser": "^1.20.2"
+    "node-fetch": "^3.4.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.1",
-    "eslint": "^8.49.0"
+    "eslint": "^8.57.0"
   }
 }
