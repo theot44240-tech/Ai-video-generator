@@ -1,38 +1,30 @@
 {
   "name": "ai-shorts-generator",
   "version": "1.0.0",
-  "description": "Générateur de shorts vidéo et texte via IA avec Hugging Face tiiuae/falcon-7b-instruct.",
-  "type": "module",
+  "description": "AI Shorts Generator 🚀 - Génère des shorts vidéos/textuels avec GPT-2",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js",
-    "lint": "eslint . --ext .js",
-    "test": "echo \"No tests defined\" && exit 0"
+    "dev": "nodemon index.js"
   },
-  "keywords": [
-    "AI",
-    "HuggingFace",
-    "Falcon",
-    "Node.js",
-    "Chatbot",
-    "Shorts",
-    "WebApp"
-  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ton-username/ai-shorts-generator.git"
+  },
   "author": "Ton Nom",
   "license": "MIT",
-  "engines": {
-    "node": ">=18.0.0"
-  },
   "dependencies": {
     "@huggingface/inference": "^4.9.0",
+    "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "node-fetch": "^3.4.1"
+    "express": "^4.18.2"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1",
-    "eslint": "^8.57.0"
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
