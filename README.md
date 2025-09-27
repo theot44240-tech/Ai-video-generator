@@ -1,33 +1,32 @@
-# AI Shorts Generator
+# 🚀 AI Shorts Generator
 
-**AI Shorts Generator** est une application web moderne qui permet de discuter avec une intelligence artificielle et de générer du contenu court instantanément. Conçue avec **Node.js**, **Express** et l’API **Hugging Face**, elle offre une interface fluide, responsive et sécurisée.
-
----
-
-## 🚀 Fonctionnalités
-
-- Chat en temps réel avec l’IA via Hugging Face
-- Interface utilisateur moderne et responsive
-- Messages différenciés (utilisateur / bot / erreur)
-- Gestion des erreurs serveur et feedback visuel
-- Extensible pour la génération de contenu texte ou vidéo
+**AI Shorts Generator** est une application web moderne permettant de générer du contenu vidéo court ou du texte via un modèle d’IA sur Hugging Face. Optimisée pour Node.js, elle est prête à déployer sur **Render**, **GitHub**, ou tout serveur Node.js.
 
 ---
 
-## 🛠 Technologies utilisées
+## 📦 Fonctionnalités
 
-- **Node.js** – serveur backend
-- **Express** – framework web minimaliste
-- **Hugging Face Hub** – API pour modèles d’IA
-- **dotenv** – gestion sécurisée des tokens
-- **HTML5 / CSS3 / JavaScript** – frontend interactif
-- **Render** – déploiement cloud recommandé
+- Chat avec une IA performante.
+- Génération de contenu vidéo ou texte selon le prompt.
+- Gestion sécurisée des tokens via `.env`.
+- Frontend responsive minimaliste (HTML/CSS/JS).
+- Déploiement rapide sur Render, Codespaces ou tout serveur Node.js.
 
 ---
 
-## 📦 Installation locale
+## 🧰 Prérequis
 
-1. Cloner le projet :
+- Node.js >= 18.x  
+- NPM >= 9.x  
+- Compte Hugging Face avec un **HF_TOKEN** valide
+- (Optionnel) GitHub / Render pour le déploiement
+
+---
+
+## ⚡ Installation locale
+
+1. **Cloner le repo**
+
 ```bash
-git clone https://github.com/ton-utilisateur/ai-shorts-generator.git
-cd ai-shorts-generator
+git clone https://github.com/theot44240-tech/Ai-video-generator.git
+cd Ai-video-generator
