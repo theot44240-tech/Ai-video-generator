@@ -1,30 +1,46 @@
-// test.js – AI Shorts Generator
-// Version finale optimisée pour Node.js / Render
-// Modèle : tiiuae/falcon-7b-instruct
+import dotenv from 'dotenv';
+import fetch from 'node-fetch';
 
-import 'dotenv/config';
-import { InferenceClient } from '@huggingface/inference';
+dotenv.config();
 
-const client = new InferenceClient(process.env.HF_TOKEN);
+// Vérifie que le token Hugging Face est défini
+if (!process.env.HF_TOKEN) {
+  console.error("❌ HF_TOKEN n'est pas défini dans ton fichier .env");
+  process.exit(1);
+}
 
-async function main() {
+// URL de l'API Inference de Hugging Face pour Falcon 7B
+const API_URL = "https://api-inference.huggingface.co/models/tiiuae/falcon-7b-instruct";
+
+// Fonction pour générer du texte via le modèle
+async function generateShort(prompt) {
   try {
-    // Texte de test
-    const inputText = "Bonjour IA, peux-tu générer un court résumé amusant ?";
-
-    // Appel au modèle Falcon 7B Instruct
-    const response = await client.textGeneration({
-      model: "tiiuae/falcon-7b-instruct",
-      inputs: inputText,
-      parameters: { max_new_tokens: 100 }
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.HF_TOKEN}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ inputs: prompt, parameters: { max_new_tokens: 150 } })
     });
 
-    console.log("=== Résultat ===");
-    console.log(response.generated_text);
-  } catch (error) {
-    console.error("❌ Une erreur est survenue :", error);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Erreur API Hugging Face : ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data[0]?.generated_text || "⚠️ Aucun texte généré.";
+  } catch (err) {
+    console.error(err);
+    return `Erreur lors de la génération : ${err.message}`;
   }
 }
 
-// Exécution du test
-main();
+// Exemple d'utilisation
+(async () => {
+  const prompt = "Écris un court script inspirant pour un short vidéo AI sur la productivité.";
+  const result = await generateShort(prompt);
+  console.log("=== Résultat généré ===");
+  console.log(result);
+})();
