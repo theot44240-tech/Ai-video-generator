@@ -1,62 +1,57 @@
-// =========================================
-// AI Shorts Generator – index.js
-// Optimisé top 0,1%, prêt pour Render / Node.js
-// =========================================
+// index.js – AI Shorts Generator
+// Version finale optimisée pour Node.js / Render
+// Modèle : tiiuae/falcon-7b-instruct
 
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import bodyParser from "body-parser";
-import { InferenceClient } from "@huggingface/inference";
-
-dotenv.config();
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import { InferenceClient } from '@huggingface/inference';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
-app.use(bodyParser.json());
-app.use(express.static("public"));
+app.use(express.json());
+app.use(express.static('public')); // Pour servir index.html, style.css, script.js
 
-// Hugging Face client
-const hf = new InferenceClient({ apiKey: process.env.HF_TOKEN });
-const MODEL = process.env.MODEL || "tiiuae/falcon-7b-instruct";
+// Initialisation du client Hugging Face
+const client = new InferenceClient(process.env.HF_TOKEN);
 
-// Root route
-app.get("/", (req, res) => {
+// Route de test de l'API
+app.get('/', (req, res) => {
   res.json({
     status: "✅ OK",
     message: "Bienvenue sur AI Shorts Generator 🚀",
-    docs: "/api/generate",
+    docs: "/api/generate"
   });
 });
 
-// API endpoint pour générer du texte
-app.post("/api/generate", async (req, res) => {
+// Route pour générer du texte avec Falcon 7B Instruct
+app.post('/api/generate', async (req, res) => {
   try {
-    const { prompt } = req.body;
-    if (!prompt || prompt.trim() === "") {
-      return res.status(400).json({ status: "❌ Error", message: "Le prompt est requis." });
+    const { prompt, max_tokens } = req.body;
+
+    if (!prompt) {
+      return res.status(400).json({ error: "Veuillez fournir un prompt." });
     }
 
-    const response = await hf.textGeneration({
-      model: MODEL,
+    const response = await client.textGeneration({
+      model: "tiiuae/falcon-7b-instruct",
       inputs: prompt,
-      parameters: { max_new_tokens: 150 },
+      parameters: {
+        max_new_tokens: max_tokens || 100
+      }
     });
 
-    res.json({
-      status: "✅ OK",
-      generated_text: response.generated_text || response[0]?.generated_text || "Aucun texte généré",
-    });
+    res.json({ generated_text: response.generated_text });
   } catch (error) {
-    console.error("Erreur API:", error);
-    res.status(500).json({ status: "❌ Error", message: "Erreur serveur. Veuillez réessayer." });
+    console.error("❌ Erreur API :", error);
+    res.status(500).json({ error: "Une erreur est survenue lors de la génération." });
   }
 });
 
 // Démarrage du serveur
-app.listen(PORT, () => {
-  console.log(`🚀 AI Shorts Generator en ligne sur le port ${PORT}`);
+app.listen(port, () => {
+  console.log(`🚀 Serveur AI Shorts Generator démarré sur le port ${port}`);
 });
