@@ -1,39 +1,39 @@
-// =============================
-// AI Shorts Generator – test.js
-// Test de l'API Hugging Face
-// Niveau top 0,1% – sécurisé et maintenable
-// =============================
+// test.js – Test rapide de l'API AI Shorts Generator
+// Top 0,1% optimisation pour Node.js / Render
 
 import dotenv from 'dotenv';
-import { InferenceClient } from '@huggingface/inference';
-
 dotenv.config();
 
-// Vérification du token
-if (!process.env.HF_TOKEN) {
-  console.error("❌ Erreur : HF_TOKEN non défini dans .env");
-  process.exit(1);
-}
+import fetch from 'node-fetch';
 
-const client = new InferenceClient({ apiKey: process.env.HF_TOKEN });
+const API_URL = process.env.API_URL || 'http://localhost:3000/api/generate';
+const TEST_PROMPT = 'Bonjour, génère un short vidéo inspirant sur l\'IA.';
 
-async function testAI() {
+async function testAPI() {
   try {
-    const prompt = "Bonjour, peux-tu me répondre ?";
+    console.log(`🚀 Envoi d'une requête à l'API: ${API_URL}`);
     
-    const response = await client.textGeneration({
-      model: 'gpt2',                 // Remplace par ton modèle préféré
-      inputs: prompt,
-      parameters: { max_new_tokens: 50 }
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ prompt: TEST_PROMPT })
     });
 
-    // Affiche la réponse générée
-    console.log("Prompt :", prompt);
-    console.log("Réponse IA :", response[0].generated_text);
+    if (!response.ok) {
+      console.error(`❌ Erreur HTTP: ${response.status} ${response.statusText}`);
+      return;
+    }
 
-  } catch (err) {
-    console.error("⚠️ Erreur lors de la génération de texte :", err);
+    const data = await response.json();
+    console.log('✅ Réponse de l\'API:');
+    console.log(JSON.stringify(data, null, 2));
+
+  } catch (error) {
+    console.error('🔥 Erreur lors du test de l\'API:', error.message);
   }
 }
 
-testAI();
+// Exécution du test
+testAPI();
