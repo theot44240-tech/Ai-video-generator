@@ -1,23 +1,39 @@
-// ===============================================
-// AI Shorts Generator – Frontend Script Optimisé
-// Modèle : tiiuae/falcon-7b-instruct
-// Optimisation top 0,1% pour performance et réactivité
-// ===============================================
+// =========================================
+// AI Shorts Generator – script.js
+// Top 0,1% optimisation pour Render / GitHub
+// Compatible avec tiiuae/falcon-7b-instruct
+// =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
-  const promptInput = document.getElementById("prompt");
+  const promptInput = document.getElementById("promptInput");
   const generateBtn = document.getElementById("generateBtn");
-  const output = document.getElementById("output");
+  const resultDiv = document.getElementById("result");
 
-  const showMessage = (msg) => {
-    output.textContent = msg;
+  const API_URL = "/api/generate"; // Endpoint Node.js
+
+  // Fonction pour afficher le résultat
+  const displayResult = (text) => {
+    resultDiv.textContent = text;
   };
 
-  const generateShort = async (prompt) => {
-    try {
-      showMessage("⏳ Génération en cours...");
+  // Fonction pour gérer les erreurs
+  const handleError = (err) => {
+    console.error("Erreur:", err);
+    resultDiv.textContent = "❌ Une erreur est survenue. Veuillez réessayer.";
+  };
 
-      const response = await fetch("/api/generate", {
+  // Fonction pour générer le short via backend
+  const generateShort = async () => {
+    const prompt = promptInput.value.trim();
+    if (!prompt) {
+      displayResult("⚠️ Veuillez écrire une question ou un prompt.");
+      return;
+    }
+
+    displayResult("⏳ Génération en cours...");
+
+    try {
+      const response = await fetch(API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -26,34 +42,28 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (!response.ok) {
-        throw new Error(`Erreur serveur : ${response.status}`);
+        throw new Error(`Erreur serveur: ${response.status}`);
       }
 
       const data = await response.json();
-      if (data.result) {
-        showMessage(data.result);
+      if (data.text) {
+        displayResult(data.text);
       } else {
-        showMessage("❌ Aucun résultat généré.");
+        displayResult("⚠️ Aucun résultat reçu. Veuillez réessayer.");
       }
-    } catch (error) {
-      console.error("Erreur lors de la génération :", error);
-      showMessage("❌ Erreur lors de la génération. Réessayez.");
+    } catch (err) {
+      handleError(err);
     }
   };
 
-  generateBtn.addEventListener("click", () => {
-    const prompt = promptInput.value.trim();
-    if (!prompt) {
-      showMessage("⚠️ Veuillez entrer un prompt !");
-      return;
-    }
-    generateShort(prompt);
-  });
+  // Événement click sur le bouton
+  generateBtn.addEventListener("click", generateShort);
 
-  // Optionnel : activer la génération avec Ctrl+Enter
-  promptInput.addEventListener("keydown", (e) => {
-    if (e.ctrlKey && e.key === "Enter") {
-      generateBtn.click();
+  // Événement Enter dans textarea
+  promptInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      generateShort();
     }
   });
 });
