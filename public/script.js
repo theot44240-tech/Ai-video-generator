@@ -1,20 +1,24 @@
-// script.js – AI Shorts Generator 🚀
-// Optimisé top 0,1% – Compatible GPT-2
+// ==========================================
+// AI Shorts Generator – script.js
+// Optimisé top 0,1% pour distilgpt2
+// Compatible Render & GitHub
+// ==========================================
 
 document.addEventListener("DOMContentLoaded", () => {
-  const promptInput = document.getElementById("prompt");
-  const generateBtn = document.getElementById("generateBtn");
-  const resultArea = document.getElementById("result");
+  const form = document.getElementById("promptForm");
+  const input = document.getElementById("promptInput");
+  const resultContainer = document.getElementById("result");
 
-  // Fonction pour appeler l'API backend
-  async function generateShort() {
-    const prompt = promptInput.value.trim();
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const prompt = input.value.trim();
     if (!prompt) {
-      alert("Veuillez écrire un prompt avant de générer.");
+      resultContainer.textContent = "⚠️ Veuillez entrer un prompt !";
       return;
     }
 
-    resultArea.textContent = "⏳ Génération en cours...";
+    resultContainer.textContent = "⏳ Génération en cours...";
 
     try {
       const response = await fetch("/api/generate", {
@@ -26,23 +30,18 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (!response.ok) {
-        throw new Error(`Erreur serveur : ${response.statusText}`);
+        throw new Error(`Erreur serveur : ${response.status}`);
       }
 
       const data = await response.json();
-      resultArea.textContent = data.result || "❌ Aucun résultat généré.";
+      if (data.error) {
+        resultContainer.textContent = `❌ Erreur API : ${data.error}`;
+      } else {
+        resultContainer.textContent = data.generated_text || "⚠️ Aucun résultat généré.";
+      }
     } catch (error) {
-      console.error("Erreur API :", error);
-      resultArea.textContent = `❌ Erreur API : ${error.message}`;
-    }
-  }
-
-  generateBtn.addEventListener("click", generateShort);
-
-  // Optionnel : générer avec Ctrl+Enter
-  promptInput.addEventListener("keydown", (e) => {
-    if (e.ctrlKey && e.key === "Enter") {
-      generateShort();
+      console.error(error);
+      resultContainer.textContent = `❌ Erreur API : ${error.message}`;
     }
   });
 });
