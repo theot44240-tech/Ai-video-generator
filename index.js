@@ -1,36 +1,26 @@
-// ==============================
-// AI Shorts Generator - index.js
-// Version finale optimisée (top 0,1%)
-// Déploiement : Render / Node.js >=18
-// ==============================
+// ================================================
+// AI Shorts Generator – index.js
+// Version finale, prête à déployer sur Render
+// Modèle: mistralai/Mistral-7B-Instruct-v0.2
+// ================================================
 
-import express from "express";
-import dotenv from "dotenv";
-import { HfInference } from "@huggingface/inference";
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import fetch from 'node-fetch';
 
-// Charger les variables d’environnement (.env local / Render dashboard)
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const HF_TOKEN = process.env.HF_TOKEN;
-
-// Vérification du token Hugging Face
-if (!HF_TOKEN) {
-  console.error("❌ ERREUR : HF_TOKEN est manquant. Ajoute-le dans ton .env (local) ou sur Render (Environment Variables).");
-  process.exit(1);
-}
-
-// Initialiser Hugging Face
-const hf = new HfInference(HF_TOKEN);
 
 // Middleware
+app.use(cors());
 app.use(express.json());
+app.use(express.static('public'));
 
-// ==============================
-// 🚀 Route de test
-// ==============================
-app.get("/", (req, res) => {
+// Vérification serveur
+app.get('/', (req, res) => {
   res.json({
     status: "✅ OK",
     message: "Bienvenue sur AI Shorts Generator 🚀",
@@ -38,50 +28,40 @@ app.get("/", (req, res) => {
   });
 });
 
-// ==============================
-// ✨ Route principale : génération
-// ==============================
-app.post("/api/generate", async (req, res) => {
+// Endpoint pour générer du contenu via Hugging Face
+app.post('/api/generate', async (req, res) => {
   try {
     const { prompt } = req.body;
-
-    if (!prompt || prompt.trim().length < 5) {
-      return res.status(400).json({
-        error: "❌ Merci de fournir un prompt valide (minimum 5 caractères)."
-      });
+    if (!prompt) {
+      return res.status(400).json({ status: "error", message: "Le champ 'prompt' est requis." });
     }
 
-    console.log(`📩 Prompt reçu : ${prompt}`);
-
-    // Appel au modèle Hugging Face
-    const response = await hf.textGeneration({
-      model: "mistralai/Mistral-7B-Instruct-v0.2",
-      inputs: prompt,
-      parameters: {
-        max_new_tokens: 200,   // Limite la longueur → évite Render timeout
-        temperature: 0.7,      // Contrôle la créativité
-        repetition_penalty: 1.2 // Évite les répétitions
-      }
+    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.HF_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        inputs: prompt,
+        parameters: { max_new_tokens: 150, temperature: 0.7 }
+      })
     });
 
-    res.json({
-      success: true,
-      prompt,
-      output: response.generated_text
-    });
+    const data = await response.json();
 
-  } catch (err) {
-    console.error("❌ Erreur API Hugging Face :", err.message);
-    res.status(500).json({
-      error: "Erreur interne lors de la génération.",
-      details: err.message
-    });
+    // Vérifie si la réponse contient du texte généré
+    const output = data?.generated_text || data?.error || "Erreur lors de la génération";
+
+    res.json({ status: "success", result: output });
+
+  } catch (error) {
+    console.error("Erreur API:", error);
+    res.status(500).json({ status: "error", message: "Erreur serveur. Veuillez réessayer." });
   }
 });
 
-// ==============================
-// Lancer le serveur
-// ==============================
+// Lancement du serveur
 app.listen(PORT, () => {
-  console.log(`🚀 Serveur lancé sur http://localhost:${PORT}`);
+  console.log(`🚀 AI Shorts Generator est en ligne sur le port ${PORT}`);
 });
