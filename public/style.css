@@ -1,166 +1,111 @@
 /* =========================================
    AI Shorts Generator – Style CSS
-   Optimisé top 0,1% pour GitHub + Render
+   Top 0,1% optimisation pour Render / GitHub
+   Compatible avec tiiuae/falcon-7b-instruct
    ========================================= */
 
-/* Reset & Global */
+/* Reset global */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 body {
-  background: #0f0f0f;
-  color: #f1f1f1;
-  min-height: 100vh;
+  background: #121212; /* Dark theme moderne */
+  color: #f5f5f5;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
-  transition: background 0.3s ease;
+  justify-content: flex-start;
+  min-height: 100vh;
+  padding: 2rem;
 }
 
-/* Header */
-header {
-  width: 100%;
-  max-width: 900px;
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-header h1 {
+h1 {
   font-size: 2rem;
-  color: #00ffff;
-  text-shadow: 0 0 10px #00ffff;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #00d1b2; /* Accent vert moderne */
 }
 
-/* Chat container */
-#chat-container {
+.container {
   width: 100%;
-  max-width: 900px;
-  background: #1a1a1a;
-  border-radius: 15px;
-  overflow: hidden;
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
-  display: flex;
-  flex-direction: column;
+  max-width: 800px;
+  background: #1e1e1e;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
 }
 
-/* Chat log */
-#chat-log {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-  height: 400px;
-  scrollbar-width: thin;
-  scrollbar-color: #00ffff transparent;
-}
-
-#chat-log::-webkit-scrollbar {
-  width: 8px;
-}
-
-#chat-log::-webkit-scrollbar-thumb {
-  background-color: #00ffff;
-  border-radius: 4px;
-}
-
-/* Messages */
-.message {
-  margin-bottom: 15px;
-  padding: 10px 15px;
-  border-radius: 15px;
-  max-width: 75%;
-  word-wrap: break-word;
-  line-height: 1.4;
-}
-
-.message.user {
-  background: #00ffff20;
-  align-self: flex-end;
-  color: #00ffff;
-}
-
-.message.ai {
-  background: #00ffff10;
-  align-self: flex-start;
-  color: #ffffff;
-}
-
-/* Form */
-#chat-form {
-  display: flex;
+textarea#promptInput {
   width: 100%;
-  background: #111;
-  border-top: 1px solid #00ffff20;
-}
-
-#user-message {
-  flex: 1;
-  padding: 12px 15px;
+  min-height: 120px;
+  padding: 1rem;
+  border-radius: 8px;
   border: none;
-  border-radius: 0;
-  background: #111;
-  color: #f1f1f1;
+  background: #2a2a2a;
+  color: #f5f5f5;
+  resize: vertical;
   font-size: 1rem;
-}
-
-#user-message:focus {
   outline: none;
-  border-left: 3px solid #00ffff;
+  margin-bottom: 1rem;
 }
 
-#chat-form button {
-  padding: 0 20px;
-  background: #00ffff;
+button#generateBtn {
+  background: #00d1b2;
+  color: #121212;
+  font-weight: 600;
   border: none;
-  color: #111;
-  font-weight: bold;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.3s ease;
 }
 
-#chat-form button:hover {
-  background: #00cccc;
+button#generateBtn:hover {
+  background: #00b894;
+  transform: scale(1.05);
 }
 
-/* Shorts container */
-#shorts-container {
-  width: 100%;
-  max-width: 900px;
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column-reverse;
-  gap: 15px;
+#result {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #2a2a2a;
+  border-radius: 8px;
+  min-height: 60px;
+  font-size: 1rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: #f5f5f5;
 }
 
-.short {
-  background: #111;
-  padding: 15px;
-  border-radius: 15px;
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
-  color: #f1f1f1;
+/* Footer */
+footer {
+  margin-top: 3rem;
+  font-size: 0.875rem;
+  color: #888;
+  text-align: center;
 }
 
-.short video {
-  width: 100%;
-  border-radius: 10px;
-  background: #000;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  #chat-container, #shorts-container, header {
-    width: 95%;
-  }
-
-  header h1 {
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  h1 {
     font-size: 1.5rem;
   }
+  
+  .container {
+    padding: 1.5rem;
+  }
 
-  #chat-log {
-    height: 300px;
+  textarea#promptInput {
+    min-height: 100px;
+  }
+
+  button#generateBtn {
+    width: 100%;
   }
 }
