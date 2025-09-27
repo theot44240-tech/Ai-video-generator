@@ -1,111 +1,81 @@
-/* =========================================
-   AI Shorts Generator – Style CSS
-   Top 0,1% optimisation pour Render / GitHub
-   Compatible avec tiiuae/falcon-7b-instruct
-   ========================================= */
+/* style.css – AI Shorts Generator 🚀 */
+/* Optimisé top 0,1% – Compatible GPT-2 */
 
-/* Reset global */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-  background: #121212; /* Dark theme moderne */
-  color: #f5f5f5;
+  background: #121212;
+  color: #f0f0f0;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  justify-content: flex-start;
   min-height: 100vh;
-  padding: 2rem;
+  padding: 20px;
+}
+
+.container {
+  background: #1e1e1e;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
 }
 
 h1 {
   font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  text-align: center;
-  color: #00d1b2; /* Accent vert moderne */
+  margin-bottom: 20px;
+  color: #ff6a00;
 }
 
-.container {
+textarea#prompt {
   width: 100%;
-  max-width: 800px;
-  background: #1e1e1e;
+  height: 120px;
+  padding: 12px;
   border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
-}
-
-textarea#promptInput {
-  width: 100%;
-  min-height: 120px;
-  padding: 1rem;
-  border-radius: 8px;
-  border: none;
+  border: 1px solid #333;
   background: #2a2a2a;
-  color: #f5f5f5;
-  resize: vertical;
+  color: #f0f0f0;
   font-size: 1rem;
-  outline: none;
-  margin-bottom: 1rem;
+  resize: vertical;
+  margin-bottom: 20px;
 }
 
 button#generateBtn {
-  background: #00d1b2;
-  color: #121212;
-  font-weight: 600;
+  background: #ff6a00;
   border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 button#generateBtn:hover {
-  background: #00b894;
+  background: #ff8c42;
   transform: scale(1.05);
 }
 
 #result {
-  margin-top: 1.5rem;
-  padding: 1rem;
+  margin-top: 20px;
+  padding: 15px;
   background: #2a2a2a;
-  border-radius: 8px;
-  min-height: 60px;
-  font-size: 1rem;
-  line-height: 1.5;
+  border-radius: 12px;
+  min-height: 80px;
   white-space: pre-wrap;
-  word-wrap: break-word;
-  color: #f5f5f5;
+  text-align: left;
+  font-family: 'Courier New', Courier, monospace;
 }
 
-/* Footer */
 footer {
-  margin-top: 3rem;
-  font-size: 0.875rem;
+  margin-top: 30px;
+  font-size: 0.9rem;
   color: #888;
-  text-align: center;
-}
-
-/* Responsive adjustments */
-@media (max-width: 600px) {
-  h1 {
-    font-size: 1.5rem;
-  }
-  
-  .container {
-    padding: 1.5rem;
-  }
-
-  textarea#promptInput {
-    min-height: 100px;
-  }
-
-  button#generateBtn {
-    width: 100%;
-  }
 }
