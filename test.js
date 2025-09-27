@@ -1,9 +1,5 @@
-// test.js – Test rapide de l'API AI Shorts Generator
-// Top 0,1% optimisation pour Node.js / Render
-
 import dotenv from 'dotenv';
 dotenv.config();
-
 import fetch from 'node-fetch';
 
 const API_URL = process.env.API_URL || 'http://localhost:3000/api/generate';
@@ -15,9 +11,7 @@ async function testAPI() {
     
     const response = await fetch(API_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt: TEST_PROMPT })
     });
 
@@ -35,5 +29,4 @@ async function testAPI() {
   }
 }
 
-// Exécution du test
 testAPI();
