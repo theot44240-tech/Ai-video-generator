@@ -1,39 +1,23 @@
-// =========================================
-// AI Shorts Generator – script.js
-// Top 0,1% optimisation pour Render / GitHub
-// Compatible avec tiiuae/falcon-7b-instruct
-// =========================================
+// script.js – AI Shorts Generator 🚀
+// Optimisé top 0,1% – Compatible GPT-2
 
 document.addEventListener("DOMContentLoaded", () => {
-  const promptInput = document.getElementById("promptInput");
+  const promptInput = document.getElementById("prompt");
   const generateBtn = document.getElementById("generateBtn");
-  const resultDiv = document.getElementById("result");
+  const resultArea = document.getElementById("result");
 
-  const API_URL = "/api/generate"; // Endpoint Node.js
-
-  // Fonction pour afficher le résultat
-  const displayResult = (text) => {
-    resultDiv.textContent = text;
-  };
-
-  // Fonction pour gérer les erreurs
-  const handleError = (err) => {
-    console.error("Erreur:", err);
-    resultDiv.textContent = "❌ Une erreur est survenue. Veuillez réessayer.";
-  };
-
-  // Fonction pour générer le short via backend
-  const generateShort = async () => {
+  // Fonction pour appeler l'API backend
+  async function generateShort() {
     const prompt = promptInput.value.trim();
     if (!prompt) {
-      displayResult("⚠️ Veuillez écrire une question ou un prompt.");
+      alert("Veuillez écrire un prompt avant de générer.");
       return;
     }
 
-    displayResult("⏳ Génération en cours...");
+    resultArea.textContent = "⏳ Génération en cours...";
 
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch("/api/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -42,27 +26,22 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (!response.ok) {
-        throw new Error(`Erreur serveur: ${response.status}`);
+        throw new Error(`Erreur serveur : ${response.statusText}`);
       }
 
       const data = await response.json();
-      if (data.text) {
-        displayResult(data.text);
-      } else {
-        displayResult("⚠️ Aucun résultat reçu. Veuillez réessayer.");
-      }
-    } catch (err) {
-      handleError(err);
+      resultArea.textContent = data.result || "❌ Aucun résultat généré.";
+    } catch (error) {
+      console.error("Erreur API :", error);
+      resultArea.textContent = `❌ Erreur API : ${error.message}`;
     }
-  };
+  }
 
-  // Événement click sur le bouton
   generateBtn.addEventListener("click", generateShort);
 
-  // Événement Enter dans textarea
-  promptInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
+  // Optionnel : générer avec Ctrl+Enter
+  promptInput.addEventListener("keydown", (e) => {
+    if (e.ctrlKey && e.key === "Enter") {
       generateShort();
     }
   });
