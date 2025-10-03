@@ -1,30 +1,39 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Shorts Generator 🚀</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Shorts Generator</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>AI Shorts Generator 🚀</h1>
-    <p>Pose ta question à l'IA et génère des shorts instantanément !</p>
+  <h1>AI Shorts Generator 🚀</h1>
+  <textarea id="prompt" placeholder="Écris ton prompt ici..."></textarea>
+  <button id="generate">Générer</button>
+  <pre id="result"></pre>
 
-    <form id="promptForm">
-      <input type="text" id="promptInput" placeholder="Écris ton prompt ici..." required>
-      <button type="submit">Générer</button>
-    </form>
+  <script>
+    const btn = document.getElementById("generate");
+    const promptEl = document.getElementById("prompt");
+    const resultEl = document.getElementById("result");
 
-    <div id="result" class="result">
-      <!-- Résultat généré par l'IA apparaîtra ici -->
-    </div>
-  </div>
-
-  <footer>
-    <p>© 2025 AI Shorts Generator | Modèle utilisé : distilgpt2</p>
-  </footer>
-
-  <script src="script.js"></script>
+    btn.onclick = async () => {
+      const prompt = promptEl.value.trim();
+      if (!prompt) return alert("Prompt manquant !");
+      resultEl.textContent = "⏳ Génération en cours...";
+      
+      try {
+        const res = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt })
+        });
+        const data = await res.json();
+        resultEl.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        resultEl.textContent = "❌ Erreur: " + err.message;
+      }
+    };
+  </script>
 </body>
 </html>
