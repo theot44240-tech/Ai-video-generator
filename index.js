@@ -1,79 +1,53 @@
-// ==============================
-// AI Shorts Generator – index.js
-// Backend Node.js Express
-// Optimisé top 0,1% – prêt pour CodeSpaces / Render
-// ==============================
-
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import { InferenceClient } from '@huggingface/inference';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-// ==============================
-// Chargement des variables d'environnement
-// ==============================
-dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// index.js - AI Shorts Generator complet
+const express = require('express');
+const fetch = require('node-fetch');
+require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-
-// ==============================
-// Vérification du token Hugging Face
-// ==============================
-if (!process.env.HF_TOKEN) {
-  console.error("❌ HF_TOKEN non défini dans .env !");
-  process.exit(1);
-}
-
-// ==============================
-// Initialisation du client Hugging Face
-// ==============================
-const client = new InferenceClient({ apiKey: process.env.HF_TOKEN });
-
-// ==============================
-// Middleware
-// ==============================
-app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
-// ==============================
-// Route principale pour servir le frontend
-// ==============================
+// Route d'accueil
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.send('<h1>🚀 AI Shorts Generator</h1><p>API en ligne ✅</p>');
 });
 
-// ==============================
-// Route API pour le chat
-// ==============================
+// Route POST /chat
 app.post('/chat', async (req, res) => {
-  try {
-    const { message } = req.body;
-    if (!message) return res.status(400).json({ error: "Message manquant" });
+  const { message } = req.body;
+  if (!message) return res.status(400).json({ error: 'Message requis' });
 
-    // Génération de texte via Hugging Face
-    const response = await client.textGeneration({
-      model: "distilgpt2", // léger et rapide pour CodeSpaces / Render
-      inputs: message,
-      parameters: { max_new_tokens: 50 }
+  const HF_TOKEN = process.env.HF_TOKEN;
+  if (!HF_TOKEN) return res.status(500).json({ error: 'HF_TOKEN manquant' });
+
+  try {
+    const response = await fetch('https://api-inference.huggingface.co/models/gpt2', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${HF_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ inputs: message }),
     });
 
-    res.json({ reply: response[0].generated_text });
+    const data = await response.json();
+
+    if (data.error) return res.status(500).json({ error: data.error });
+
+    const answer = Array.isArray(data) && data[0]?.generated_text ? data[0].generated_text : '🤖 L’IA a rencontré un problème.';
+    res.json({ response: answer });
   } catch (err) {
-    console.error("⚠️ Erreur serveur :", err);
-    res.status(500).json({ error: "Erreur serveur. Veuillez réessayer." });
+    console.error(err);
+    res.status(500).json({ error: 'Erreur serveur /chat' });
   }
 });
 
-// ==============================
+// Route POST /generate (stub)
+app.post('/generate', async (req, res) => {
+  res.json({ message: '🚀 Endpoint /generate prêt à être implémenté !' });
+});
+
 // Démarrage du serveur
-// ==============================
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Serveur AI Shorts Generator démarré sur le port ${PORT}`);
+  console.log(`🚀 AI Shorts Generator démarré sur http://localhost:${PORT}`);
 });
