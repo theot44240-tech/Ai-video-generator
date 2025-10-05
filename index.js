@@ -1,47 +1,53 @@
-import express from "express";
-import fetch from "node-fetch";
-import dotenv from "dotenv";
-dotenv.config();
+// index.js - AI Shorts Generator complet
+const express = require('express');
+const fetch = require('node-fetch');
+require('dotenv').config();
 
 const app = express();
 app.use(express.json());
-app.use(express.static("."));
 
-const PORT = process.env.PORT || 3000;
-const HF_TOKEN = process.env.HF_TOKEN;
-const MODEL = process.env.MODEL || "distilgpt2";
+// Route d'accueil
+app.get('/', (req, res) => {
+  res.send('<h1>🚀 AI Shorts Generator</h1><p>API en ligne ✅</p>');
+});
 
-if (!HF_TOKEN) {
-  console.error("❌ HF_TOKEN non défini !");
-  process.exit(1);
-}
+// Route POST /chat
+app.post('/chat', async (req, res) => {
+  const { message } = req.body;
+  if (!message) return res.status(400).json({ error: 'Message requis' });
 
-app.post("/api/generate", async (req, res) => {
-  const { prompt } = req.body;
-  if (!prompt) return res.status(400).json({ error: "Prompt manquant !" });
+  const HF_TOKEN = process.env.HF_TOKEN;
+  if (!HF_TOKEN) return res.status(500).json({ error: 'HF_TOKEN manquant' });
 
   try {
-    const response = await fetch(`https://api-inference.huggingface.co/models/${MODEL}`, {
-      method: "POST",
+    const response = await fetch('https://api-inference.huggingface.co/models/gpt2', {
+      method: 'POST',
       headers: {
-        "Authorization": `Bearer ${HF_TOKEN}`,
-        "Content-Type": "application/json"
+        Authorization: `Bearer ${HF_TOKEN}`,
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ inputs: prompt })
+      body: JSON.stringify({ inputs: message }),
     });
 
-    if (!response.ok) {
-      const errText = await response.text();
-      return res.status(response.status).json({ error: errText });
-    }
-
     const data = await response.json();
-    res.json(data);
+
+    if (data.error) return res.status(500).json({ error: data.error });
+
+    const answer = Array.isArray(data) && data[0]?.generated_text ? data[0].generated_text : '🤖 L’IA a rencontré un problème.';
+    res.json({ response: answer });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({ error: 'Erreur serveur /chat' });
   }
 });
 
+// Route POST /generate (stub)
+app.post('/generate', async (req, res) => {
+  res.json({ message: '🚀 Endpoint /generate prêt à être implémenté !' });
+});
+
+// Démarrage du serveur
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 AI Shorts Generator démarré sur http://localhost:${PORT}`);
 });
