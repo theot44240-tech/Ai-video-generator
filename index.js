@@ -1,20 +1,26 @@
-// index.js - AI Shorts Generator complet
+// index.js - AI Shorts Generator - Version finale prête pour Render
 const express = require('express');
-const fetch = require('node-fetch');
-require('dotenv').config();
+const fetch = require('node-fetch'); // Pour requêtes Hugging Face
+require('dotenv').config(); // Charger variables d'environnement depuis .env
 
 const app = express();
 app.use(express.json());
 
-// Route d'accueil
+// ---------- ROUTE D'ACCUEIL ----------
 app.get('/', (req, res) => {
-  res.send('<h1>🚀 AI Shorts Generator</h1><p>API en ligne ✅</p>');
+  res.send(`
+    <h1>🚀 AI Shorts Generator</h1>
+    <p>API en ligne ✅</p>
+    <p>POST /chat pour discuter avec l'IA</p>
+    <p>POST /generate pour créer des shorts vidéos</p>
+  `);
 });
 
-// Route POST /chat
+// ---------- ROUTE POST /chat ----------
 app.post('/chat', async (req, res) => {
   const { message } = req.body;
-  if (!message) return res.status(400).json({ error: 'Message requis' });
+
+  if (!message) return res.status(400).json({ error: 'Le message est requis' });
 
   const HF_TOKEN = process.env.HF_TOKEN;
   if (!HF_TOKEN) return res.status(500).json({ error: 'HF_TOKEN manquant' });
@@ -41,12 +47,14 @@ app.post('/chat', async (req, res) => {
   }
 });
 
-// Route POST /generate (stub)
+// ---------- ROUTE POST /generate (stub vidéo) ----------
 app.post('/generate', async (req, res) => {
+  // Ici tu peux ajouter la logique pour générer un short vidéo
+  // Exemple : images + texte + audio + montage
   res.json({ message: '🚀 Endpoint /generate prêt à être implémenté !' });
 });
 
-// Démarrage du serveur
+// ---------- PORT ----------
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 AI Shorts Generator démarré sur http://localhost:${PORT}`);
