@@ -1,33 +1,22 @@
-# AI Shorts Generator
+# AI Shorts Generator 🚀
 
-**AI Shorts Generator** est une application web moderne qui permet de discuter avec une intelligence artificielle et de générer du contenu court instantanément. Conçue avec **Node.js**, **Express** et l’API **Hugging Face**, elle offre une interface fluide, responsive et sécurisée.
-
----
-
-## 🚀 Fonctionnalités
-
-- Chat en temps réel avec l’IA via Hugging Face
-- Interface utilisateur moderne et responsive
-- Messages différenciés (utilisateur / bot / erreur)
-- Gestion des erreurs serveur et feedback visuel
-- Extensible pour la génération de contenu texte ou vidéo
+Bienvenue dans **AI Shorts Generator**, l'outil ultime pour générer des courts textes ou scripts automatiquement grâce à l'intelligence artificielle **distilgpt2**.
 
 ---
 
-## 🛠 Technologies utilisées
+## 🔹 Fonctionnalités
 
-- **Node.js** – serveur backend
-- **Express** – framework web minimaliste
-- **Hugging Face Hub** – API pour modèles d’IA
-- **dotenv** – gestion sécurisée des tokens
-- **HTML5 / CSS3 / JavaScript** – frontend interactif
-- **Render** – déploiement cloud recommandé
+- Génération instantanée de shorts basés sur vos prompts.
+- Interface simple et intuitive.
+- Prêt pour le déploiement sur **Render** ou tout serveur **Node.js**.
+- Optimisé pour performance et compatibilité maximale.
+- API REST facile à utiliser pour intégration dans d'autres projets.
 
 ---
 
-## 📦 Installation locale
+## ⚡ Installation (Codespaces / Local)
 
-1. Cloner le projet :
+1. Clone le projet :  
 ```bash
-git clone https://github.com/ton-utilisateur/ai-shorts-generator.git
-cd ai-shorts-generator
+git clone https://github.com/theot44240-tech/Ai-video-generator.git
+cd Ai-video-generator

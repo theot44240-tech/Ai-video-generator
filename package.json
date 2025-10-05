@@ -1,36 +1,41 @@
 {
   "name": "ai-shorts-generator",
   "version": "1.0.0",
-  "description": "Application web moderne pour discuter avec une IA et générer du contenu court via Hugging Face.",
-  "type": "module",
+  "description": "Générateur de shorts vidéo/textuels instantanés avec IA utilisant distilgpt2",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "lint": "eslint . --ext .js",
-    "test": "echo \"No tests defined\" && exit 0"
+    "test": "node test.js"
   },
-  "keywords": [
-    "AI",
-    "HuggingFace",
-    "Node.js",
-    "Chatbot",
-    "Shorts",
-    "WebApp"
-  ],
-  "author": "Ton Nom",
-  "license": "MIT",
   "engines": {
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "@huggingface/inference": "^4.9.0",
+    "@huggingface/inference": "^3.13.2",
+    "body-parser": "^1.20.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.6.1",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2"
   },
   "devDependencies": {
-    "eslint": "^8.49.0",
-    "nodemon": "^3.0.1"
-  }
+    "nodemon": "^2.0.22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theot44240-tech/Ai-video-generator.git"
+  },
+  "keywords": [
+    "AI",
+    "shorts",
+    "generator",
+    "distilgpt2",
+    "huggingface",
+    "express",
+    "nodejs",
+    "render"
+  ],
+  "author": "theot44240-tech",
+  "license": "MIT"
 }

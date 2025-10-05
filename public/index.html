@@ -3,44 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Shorts Generator</title>
+  <title>AI Shorts Generator 🚀</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="favicon.ico">
-  <meta name="description" content="Discute avec notre intelligence artificielle et génère du contenu court rapidement.">
 </head>
 <body>
-  <!-- Header -->
-  <header>
-    <h1>AI Shorts Generator</h1>
-    <p>Discute avec l'IA et génère du contenu court instantanément !</p>
-  </header>
+  <div class="container">
+    <h1>AI Shorts Generator 🚀</h1>
+    <p>Pose ta question à l'IA et génère des shorts instantanément !</p>
 
-  <!-- Chat principal -->
-  <main>
-    <section class="chat-section">
-      <div id="chat-container" class="chat-container">
-        <!-- Les messages utilisateur et IA apparaîtront ici -->
-      </div>
+    <textarea id="prompt" placeholder="Écris ton prompt ici..." rows="4"></textarea>
+    <button id="generateBtn">Générer</button>
 
-      <form id="chat-form" class="chat-form">
-        <input 
-          type="text" 
-          id="chat-input" 
-          placeholder="Écris ton message..." 
-          autocomplete="off" 
-          required
-        />
-        <button type="submit">Envoyer</button>
-      </form>
-    </section>
-  </main>
+    <h2>Résultat :</h2>
+    <pre id="result">© 2025 AI Shorts Generator | Modèle utilisé : distilgpt2</pre>
+  </div>
 
-  <!-- Footer -->
-  <footer>
-    <p>© 2025 AI Shorts Generator. Tous droits réservés.</p>
-  </footer>
-
-  <!-- Script JS -->
   <script src="script.js"></script>
 </body>
 </html>

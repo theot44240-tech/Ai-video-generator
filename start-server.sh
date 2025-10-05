@@ -1,7 +1,7 @@
 #!/bin/bash
 # =========================================
 # AI Shorts Generator – Script de démarrage
-# Top 0,1% optimisation pour CodeSpaces / Render
+# Optimisé top 0,1% pour Codespaces / Render
 # =========================================
 
 # Port par défaut
@@ -15,6 +15,19 @@ if [ -n "$PID" ]; then
   echo "✅ Processus tué."
 fi
 
-# Lancement du serveur Node.js
-echo "🚀 Démarrage du serveur sur le port $PORT..."
+# Vérifie que HF_TOKEN est défini
+if [ -z "$HF_TOKEN" ]; then
+  echo "❌ ERREUR : HF_TOKEN non défini dans .env !"
+  exit 1
+fi
+
+# Affiche les infos avant lancement
+echo "🚀 Démarrage du serveur AI Shorts Generator..."
+echo "📌 Port : $PORT"
+echo "📌 Modèle : distilgpt2"
+
+# Démarrage du serveur Node.js
 node index.js
+
+# Fin du script
+echo "✅ Serveur lancé !"
