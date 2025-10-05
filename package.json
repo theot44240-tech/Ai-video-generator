@@ -1,17 +1,32 @@
 {
   "name": "ai-shorts-generator",
   "version": "1.0.0",
-  "type": "module",
+  "description": "AI Shorts Generator - Génère des courts vidéos via IA",
+  "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "AI",
+    "GPT2",
+    "Shorts",
+    "Video",
+    "Render",
+    "Node.js"
+  ],
+  "author": "theot44240-tech",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.0.0"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "dotenv": "^16.3.1",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^2.6.12",
+    "dotenv": "^16.3.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "nodemon": "^3.0.1"
   }
 }
