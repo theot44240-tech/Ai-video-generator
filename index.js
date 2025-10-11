@@ -13,18 +13,19 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middlewares
-app.use(express.static("public")); // Sert index.html, style.css, script.js
-app.use(express.json()); // Parse les requêtes POST JSON
+app.use(express.static("public")); // Sert index.html, script.js, style.css
+app.use(express.json()); // Parse JSON des requêtes POST
 
 // Endpoint pour générer un short
 app.post("/generate", async (req, res) => {
   try {
     const { prompt } = req.body;
+
     if (!prompt || prompt.trim() === "") {
       return res.status(400).json({ status: "error", message: "Prompt manquant" });
     }
 
-    // Génération de script (à remplacer par AI réel si besoin)
+    // Génération du script (à remplacer par AI réel si besoin)
     const script = `🎬 Script généré pour le prompt : "${prompt}"`;
 
     res.json({ status: "success", prompt, script });
