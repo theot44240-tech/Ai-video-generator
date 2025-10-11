@@ -1,45 +1,19 @@
 {
   "name": "ai-shorts-generator",
   "version": "1.0.0",
-  "description": "AI Shorts Generator — Générateur automatique de vidéos courtes entre 20 et 70 secondes, optimisé pour Render et Node.js.",
+  "description": "Générateur de Shorts AI rapide et optimisé pour Render / Node.js",
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "echo \"No tests specified\" && exit 0"
+    "start": "node index.js"
   },
+  "author": "theot44240-tech",
+  "license": "MIT",
   "engines": {
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "body-parser": "^1.20.3",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "multer": "^1.4.5-lts.1",
-    "node-fetch": "^2.6.7",
-    "uuid": "^9.0.1"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.4"
-  },
-  "keywords": [
-    "AI",
-    "shorts",
-    "video-generator",
-    "render",
-    "nodejs",
-    "express",
-    "huggingface",
-    "gpt",
-    "ai-shorts"
-  ],
-  "author": "theot44240-tech",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/theot44240-tech/Ai-video-generator"
-  },
-  "homepage": "https://ai-video-generator.onrender.com/"
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2"
+  }
 }
