@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    generateBtn.disabled = true;
     showOutput("⏳ Génération en cours...");
 
     try {
@@ -45,18 +46,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const data = await response.json();
 
-      // Affichage propre du JSON généré
-      showOutput(JSON.stringify(data, null, 2));
+      // Affichage uniquement du script généré
+      showOutput(data.script || "⚠️ Aucun script généré");
+
     } catch (err) {
       showOutput("❌ Une erreur est survenue : " + err.message);
       console.error(err);
+    } finally {
+      generateBtn.disabled = false;
     }
   };
 
   // Gestionnaire d’événement bouton
   generateBtn.addEventListener("click", generateShort);
 
-  // Optionnel : générer short avec touche Enter dans textarea
+  // Optionnel : générer short avec touche Enter dans input
   promptInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
