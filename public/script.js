@@ -1,13 +1,18 @@
 /* ==========================================================
    🚀 AI SHORTS GENERATOR – FRONTEND SCRIPT
    Author: TheoT44240-Tech
-   Level: Top 0.1% optimization and clarity
+   Niveau: Top 0.1% | Optimisé pour Render & Node.js
    ========================================================== */
 
-const form = document.getElementById("generateForm");
-const textInput = document.getElementById("textInput");
-const voiceSelect = document.getElementById("voiceSelect");
-const languageSelect = document.getElementById("languageSelect");
+const API_BASE = window.location.origin;
+
+/* ==========================================================
+   🎯 ELEMENTS DU DOM
+========================================================== */
+const promptInput = document.getElementById("prompt");
+const voiceSelect = document.getElementById("voice");
+const durationSelect = document.getElementById("duration");
+const generateBtn = document.getElementById("generateBtn");
 
 const progressSection = document.getElementById("progressSection");
 const progressText = document.getElementById("progressText");
@@ -18,13 +23,8 @@ const generatedVideo = document.getElementById("generatedVideo");
 const downloadBtn = document.getElementById("downloadBtn");
 const retryBtn = document.getElementById("retryBtn");
 
-const API_BASE =
-  window.location.hostname.includes("render.com")
-    ? "https://ai-video-genr.onrender.com"
-    : "http://localhost:3000";
-
 /* ==========================================================
-   🧩 HELPERS
+   ⚙️ UTILITAIRES
 ========================================================== */
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -39,29 +39,27 @@ const showResult = () => resultSection.classList.remove("hidden");
 const hideResult = () => resultSection.classList.add("hidden");
 
 /* ==========================================================
-   🎬 HANDLE FORM SUBMIT
+   🧠 GÉNÉRATION DU SHORT
 ========================================================== */
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+generateBtn.addEventListener("click", async () => {
   hideResult();
-
-  const text = textInput.value.trim();
+  const text = promptInput.value.trim();
   if (!text) {
-    alert("⚠️ Merci d’entrer un texte à transformer en vidéo.");
+    alert("⚠️ Merci d’entrer un texte avant de générer la vidéo.");
     return;
   }
 
-  const voice = voiceSelect.value || "fr";
-  const lang = languageSelect.value || "fr";
+  const voice = voiceSelect.value;
+  const duration = durationSelect.value;
 
   try {
     setProgress("🎧 Génération de la voix en cours…");
 
-    // Étape 1 : Génération de la voix via TTS
+    // Étape 1 : génération TTS
     const ttsRes = await fetch(`${API_BASE}/api/tts`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, voice, lang }),
+      body: JSON.stringify({ text, voice }),
     });
 
     if (!ttsRes.ok) throw new Error("Erreur TTS");
@@ -70,7 +68,7 @@ form.addEventListener("submit", async (e) => {
 
     setProgress("🎞️ Génération de la vidéo IA…");
 
-    // Étape 2 : Génération vidéo (texte + audio)
+    // Étape 2 : génération vidéo
     const genRes = await fetch(`${API_BASE}/api/generate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -78,70 +76,71 @@ form.addEventListener("submit", async (e) => {
         text,
         audioPath: ttsData.audioPath,
         voice,
-        lang,
+        duration,
       }),
     });
 
-    if (!genRes.ok) throw new Error("Erreur vidéo");
+    if (!genRes.ok) throw new Error("Erreur génération vidéo");
     const genData = await genRes.json();
     if (!genData.videoPath) throw new Error("Chemin vidéo manquant");
 
-    // Étape 3 : Affichage du résultat
+    // Étape 3 : affichage résultat
     hideProgress();
     showResult();
-
     generatedVideo.src = `${API_BASE}/${genData.videoPath}?t=${Date.now()}`;
     downloadBtn.href = `${API_BASE}/${genData.videoPath}`;
-    downloadBtn.download = "ai_short.mp4";
+    downloadBtn.download = "AI_Short.mp4";
 
     setProgress("✅ Vidéo générée avec succès !", false);
   } catch (err) {
-    console.error(err);
+    console.error("❌ Erreur:", err);
     hideProgress();
-    alert("❌ Une erreur est survenue pendant la génération.");
+    alert("❌ Une erreur est survenue pendant la génération. Vérifie le backend.");
   }
 });
 
 /* ==========================================================
-   🔁 RETRY / RESET
+   🔁 REESSAYER
 ========================================================== */
 retryBtn.addEventListener("click", () => {
-  textInput.value = "";
+  promptInput.value = "";
   hideResult();
   hideProgress();
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
 /* ==========================================================
-   🌍 AUTO LOAD VOICES
+   🎤 CHARGEMENT DES VOIX AUTO
 ========================================================== */
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     const res = await fetch(`${API_BASE}/api/voices`);
     if (!res.ok) throw new Error("Impossible de charger les voix");
-    const voices = await res.json();
 
+    const voices = await res.json();
     voiceSelect.innerHTML = "";
+
     voices.forEach((v) => {
       const opt = document.createElement("option");
       opt.value = v.id || v.name;
-      opt.textContent = `${v.label || v.name}`;
+      opt.textContent = v.label || v.name;
       voiceSelect.appendChild(opt);
     });
-  } catch (err) {
-    console.warn("⚠️ Chargement voix local par défaut.");
+  } catch {
+    console.warn("⚠️ Chargement voix locales par défaut.");
     voiceSelect.innerHTML = `
-      <option value="fr">Français</option>
-      <option value="en">Anglais</option>
-      <option value="es">Espagnol</option>
+      <option value="fr-male">Français (Homme)</option>
+      <option value="fr-female">Français (Femme)</option>
+      <option value="en-male">English (Male)</option>
+      <option value="en-female">English (Female)</option>
     `;
   }
 });
 
 /* ==========================================================
-   🧠 UX TOUCHES
+   🧠 UX
 ========================================================== */
-textInput.addEventListener("input", () => {
-  const len = textInput.value.trim().length;
-  textInput.style.borderColor = len > 10 ? "var(--primary)" : "#333";
+promptInput.addEventListener("input", () => {
+  const len = promptInput.value.trim().length;
+  promptInput.style.borderColor = len > 15 ? "var(--primary)" : "#333";
 });
