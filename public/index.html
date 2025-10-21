@@ -3,55 +3,59 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="AI Shorts Generator – Crée des vidéos YouTube Shorts automatiquement grâce à l'IA." />
-  <meta name="theme-color" content="#111111" />
-  
+  <meta name="description" content="AI Shorts Generator – Crée automatiquement des vidéos YouTube Shorts avec l’IA. 🚀" />
+  <meta name="theme-color" content="#0d0d0d" />
   <title>AI Shorts Generator 🚀</title>
 
   <!-- Favicon -->
   <link rel="icon" href="/favicon.ico" />
 
   <!-- Fonts & Icons -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
   <!-- CSS -->
   <link rel="stylesheet" href="style.css" />
 
-  <!-- Preload for performance -->
-  <link rel="preload" href="/script.js" as="script">
+  <!-- Preload performance -->
+  <link rel="preload" href="/script.js" as="script" />
 </head>
 
 <body>
   <div class="app-container">
-    <header>
+    <header class="header">
       <h1>🎬 AI Shorts Generator</h1>
-      <p class="subtitle">Génère des vidéos YouTube Shorts automatiquement avec la puissance de l’IA 🤖</p>
+      <p class="subtitle">Crée des vidéos YouTube Shorts automatiquement grâce à l’intelligence artificielle 🤖</p>
     </header>
 
     <main>
-      <!-- Zone du formulaire -->
+      <!-- 🧠 FORMULAIRE -->
       <section class="form-section">
-        <label for="prompt" class="label">💡 Entre ton idée de short :</label>
-        <textarea id="prompt" placeholder="Ex : La motivation à ne jamais abandonner..." rows="4"></textarea>
+        <label for="prompt" class="label">💡 Ton idée de Short :</label>
+        <textarea id="prompt" placeholder="Ex : Pourquoi il ne faut jamais abandonner..." rows="4"></textarea>
 
-        <div class="options">
-          <label for="voice">🎤 Voix :</label>
-          <select id="voice">
-            <option value="fr-male">Français (Homme)</option>
-            <option value="fr-female">Français (Femme)</option>
-            <option value="en-male">English (Male)</option>
-            <option value="en-female">English (Female)</option>
-          </select>
+        <div class="form-options">
+          <div class="option">
+            <label for="voice">🎤 Voix :</label>
+            <select id="voice">
+              <option value="fr-male" selected>Français (Homme)</option>
+              <option value="fr-female">Français (Femme)</option>
+              <option value="en-male">English (Male)</option>
+              <option value="en-female">English (Female)</option>
+              <option value="es-female">Español (Femme)</option>
+            </select>
+          </div>
 
-          <label for="duration">⏱ Durée cible :</label>
-          <select id="duration">
-            <option value="20">20s</option>
-            <option value="30" selected>30s</option>
-            <option value="45">45s</option>
-            <option value="60">60s</option>
-            <option value="70">70s</option>
-          </select>
+          <div class="option">
+            <label for="duration">⏱ Durée cible :</label>
+            <select id="duration">
+              <option value="20">20s</option>
+              <option value="30" selected>30s</option>
+              <option value="45">45s</option>
+              <option value="60">60s</option>
+              <option value="70">70s</option>
+            </select>
+          </div>
         </div>
 
         <button id="generateBtn" class="btn-primary">
@@ -59,16 +63,16 @@
         </button>
       </section>
 
-      <!-- Zone de progression -->
+      <!-- ⚙️ PROGRESSION -->
       <section id="progressSection" class="hidden">
         <div class="loader"></div>
-        <p id="progressText">Génération en cours...</p>
+        <p id="progressText">Génération du short en cours...</p>
       </section>
 
-      <!-- Zone du résultat -->
+      <!-- 🎥 RÉSULTAT -->
       <section id="resultSection" class="hidden">
-        <h2>✨ Résultat :</h2>
-        <video id="generatedVideo" controls></video>
+        <h2>✨ Ton Short est prêt :</h2>
+        <video id="generatedVideo" controls playsinline></video>
 
         <div class="actions">
           <button id="downloadBtn" class="btn-secondary">
@@ -82,7 +86,7 @@
     </main>
 
     <footer>
-      <p>⚡ Fait avec ❤️ par l’IA – Optimisé pour Render & Node.js</p>
+      <p>⚡ Fait avec ❤️ et IA – Optimisé pour Render & Node.js</p>
     </footer>
   </div>
 
