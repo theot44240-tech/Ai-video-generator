@@ -1,25 +1,54 @@
 {
   "name": "ai-shorts-generator",
-  "version": "1.0.0",
-  "description": "Générateur de Shorts AI rapide et optimisé pour Render / Node.js",
+  "version": "2.0.0",
+  "description": "AI Shorts Generator — crée automatiquement des vidéos courtes avec génération de texte, TTS et transcription via Groq, PlayAI et Google TTS.",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "test-groq": "node test-groq.js"
-  },
-  "author": "theot44240-tech",
-  "license": "MIT",
-  "engines": {
-    "node": ">=18.0.0"
+    "start": "bash ./start-server.sh",
+    "dev": "nodemon index.js",
+    "server": "node index.js",
+    "clean": "rm -rf ./output ./uploads && mkdir -p output uploads",
+    "test": "node --test"
   },
   "dependencies": {
-    "axios": "^1.5.0",
-    "dotenv": "^16.6.1",
-    "express": "^4.18.2",
-    "openai": "^4.104.0",
-    "google-tts-api": "^0.0.6",
-    "groq-sdk": "^0.33.0",
-    "uuid": "^13.0.0"
-  }
+    "axios": "^1.7.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "form-data": "^4.0.0",
+    "google-tts-api": "^2.0.2",
+    "openai": "^4.55.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "keywords": [
+    "ai",
+    "shorts",
+    "video-generator",
+    "groq",
+    "playai",
+    "tts",
+    "whisper",
+    "openai",
+    "render",
+    "automation"
+  ],
+  "author": {
+    "name": "TheoTech",
+    "email": "contact@theotech.dev"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theot44240-tech/AI-video-generator"
+  },
+  "bugs": {
+    "url": "https://github.com/theot44240-tech/AI-video-generator/issues"
+  },
+  "homepage": "https://ai-shorts-generator.onrender.com",
+  "private": false
 }
