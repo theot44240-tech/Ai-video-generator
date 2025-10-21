@@ -1,7 +1,7 @@
 {
   "name": "ai-shorts-generator",
   "version": "2.0.0",
-  "description": "AI Shorts Generator — Texte, TTS, Transcription, Montage Vidéo | Top 0,1% Production Ready",
+  "description": "AI Shorts Generator — Ultra-Stable, Top 0.1% deployment-ready, Node 25+",
   "main": "index.js",
   "type": "module",
   "engines": {
@@ -9,48 +9,29 @@
   },
   "scripts": {
     "start": "bash ./start-server.sh",
-    "dev": "nodemon index.js",
-    "lint": "eslint . --ext .js,.mjs",
-    "audit": "npm audit",
-    "fix": "npm audit fix --force",
-    "clean": "rm -rf ./node_modules ./output ./logs && echo '✅ Nettoyage complet effectué'",
-    "build": "echo '✅ Build ultra-stable (Node.js + Python TTS ready)'"
+    "dev": "nodemon --watch './**/*.js' --exec 'node --experimental-specifier-resolution=node index.js'",
+    "clean": "rm -rf node_modules package-lock.json && npm cache clean --force",
+    "reinstall": "npm run clean && npm install",
+    "lint": "eslint . --ext .js",
+    "test": "echo 'No tests defined' && exit 0"
   },
   "dependencies": {
     "axios": "^1.6.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.1.4",
-    "express": "^4.18.3",
-    "form-data": "^4.1.0",
+    "dotenv": "^1.1.1",
+    "express": "^4.18.2",
+    "form-data": "^4.0.1",
     "google-tts-api": "^2.0.1",
-    "openai": "^4.30.0",
-    "p-limit": "^4.0.0",
+    "openai": "^4.9.0",
+    "pydub": "^0.25.1",
     "loguru": "^0.7.3",
-    "p-map": "^5.6.0",
-    "dotenv-expand": "^10.0.0"
+    "uuid": "^9.0.0",
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2",
-    "eslint": "^8.54.0",
-    "prettier": "^3.3.0"
+    "nodemon": "^3.0.3",
+    "eslint": "^8.44.0"
   },
-  "keywords": [
-    "AI",
-    "shorts",
-    "video",
-    "TTS",
-    "transcription",
-    "groq",
-    "llama",
-    "whisper",
-    "render"
-  ],
   "author": "Théo",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/theot44240-tech/Ai-video-generator.git"
-  },
-  "enginesStrict": true,
-  "private": false
+  "license": "MIT"
 }
