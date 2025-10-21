@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "Générateur de Shorts AI rapide et optimisé pour Render / Node.js",
   "main": "index.js",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test-groq": "node test-groq.js"
   },
   "author": "theot44240-tech",
   "license": "MIT",
@@ -13,22 +14,12 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2"
-  "type": "module",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js",
-    "test-groq": "node test-groq.js"
-  },
-  "dependencies": {
     "axios": "^1.5.0",
-    "dotenv": "^16.3.1",
-    "openai": "^4.9.0"
     "dotenv": "^16.6.1",
+    "express": "^4.18.2",
+    "openai": "^4.104.0",
     "google-tts-api": "^0.0.6",
     "groq-sdk": "^0.33.0",
-    "openai": "^4.104.0",
     "uuid": "^13.0.0"
   }
 }
