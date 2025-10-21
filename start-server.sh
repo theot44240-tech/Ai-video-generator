@@ -1,79 +1,49 @@
 #!/bin/bash
-# 🚀 AI Shorts Generator — Ultra-stable start script, Top 0.1%
-# Author: Théo
-# Usage: bash start-server.sh
+set -euo pipefail
 
-set -e  # Stop script on first error
-set -o pipefail
-
-# ========= CONFIGURATION =========
-NODE_PORT=${PORT:-3000}
-PYTHON_ENV_DIR="./tts-env"
 LOG_DIR="./logs"
-UPLOADS_DIR="./uploads"
 OUTPUT_DIR="./output"
-ENV_FILE="./.env"
-NVM_DIR="$HOME/.nvm"
+UPLOADS_DIR="./uploads"
+PORT="${PORT:-3000}"
 
-# ========= COLORS =========
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-CYAN='\033[0;36m'
-NC='\033[0m'
+mkdir -p "$LOG_DIR" "$OUTPUT_DIR" "$UPLOADS_DIR"
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+LOG_FILE="$LOG_DIR/server_$TIMESTAMP.log"
 
-echo -e "${CYAN}🌟 [AI Shorts Generator] Starting ultra-stable environment...${NC}"
+echo "🌟 [AI Shorts Generator] Démarrage ultra-stable..." | tee -a "$LOG_FILE"
+echo "📌 Dossiers prêts : $OUTPUT_DIR, $UPLOADS_DIR" | tee -a "$LOG_FILE"
 
-# ========= CREATE FOLDERS =========
-mkdir -p $UPLOADS_DIR $OUTPUT_DIR $LOG_DIR
-echo -e "${GREEN}📂 Directories ready: $UPLOADS_DIR, $OUTPUT_DIR, $LOG_DIR${NC}"
-
-# ========= CHECK ENV FILE =========
-if [ ! -f $ENV_FILE ]; then
-    echo -e "${YELLOW}⚠️  Warning: $ENV_FILE not found. Creating default .env file${NC}"
-    touch $ENV_FILE
-    echo "# Add your TTS keys and configs here" > $ENV_FILE
-fi
-
-# ========= NODE DEPENDENCIES =========
-echo -e "${CYAN}📦 Installing/updating Node.js dependencies...${NC}"
-npm install || {
-    echo -e "${RED}❌ Node dependencies installation failed${NC}"
-    exit 1
-}
-
-# Check nodemon
-if ! command -v nodemon &> /dev/null; then
-    echo -e "${YELLOW}⚡ nodemon not found, installing globally...${NC}"
+# Node.js dependencies
+echo "📦 Installation des dépendances Node.js..." | tee -a "$LOG_FILE"
+if ! command -v nodemon >/dev/null 2>&1; then
+    echo "⚡ nodemon non trouvé, installation globale..." | tee -a "$LOG_FILE"
     npm install -g nodemon
 fi
+npm install --legacy-peer-deps | tee -a "$LOG_FILE"
 
-# ========= PYTHON TTS ENV =========
-echo -e "${CYAN}🐍 Setting up Python virtual environment for TTS...${NC}"
-python3 -m venv $PYTHON_ENV_DIR
-source $PYTHON_ENV_DIR/bin/activate
-pip install --upgrade pip setuptools wheel
-if [ -f requirements.txt ]; then
-    pip install -r requirements.txt
-fi
-deactivate
-echo -e "${GREEN}✅ Python TTS environment ready${NC}"
-
-# ========= CHECK TTS KEYS =========
-source $ENV_FILE
-if [ -z "$PLAYAI_TTS_KEY" ]; then
-    echo -e "${YELLOW}⚠️ PLAYAI_TTS_KEY not defined, fallback to Google TTS enabled${NC}"
+# Python TTS setup
+PY_ENV="tts-env"
+echo "🐍 Création de l'environnement Python TTS..." | tee -a "$LOG_FILE"
+if [ ! -d "$PY_ENV" ]; then
+    python3 -m venv "$PY_ENV"
 fi
 
-# ========= LAUNCH SERVER =========
-echo -e "${CYAN}🔗 Launching Node.js server on port $NODE_PORT...${NC}"
-export PORT=$NODE_PORT
+echo "🔄 Activation de l'environnement Python..." | tee -a "$LOG_FILE"
+source "$PY_ENV/bin/activate"
 
-# Start with nodemon if in dev, else node
-if [ "$1" == "dev" ]; then
-    nodemon index.js --watch index.js --watch server
+echo "📦 Mise à jour pip et packages essentiels..." | tee -a "$LOG_FILE"
+pip install --upgrade pip setuptools wheel | tee -a "$LOG_FILE"
+pip install -r requirements.txt | tee -a "$LOG_FILE"
+
+# TTS fallback check
+if [ -z "${PLAYAI_TTS_KEY:-}" ]; then
+    echo "⚠️ PLAYAI_TTS_KEY non défini, fallback Google TTS activé" | tee -a "$LOG_FILE"
 else
-    node index.js
+    echo "🔑 PLAYAI_TTS_KEY détectée, PlayAI TTS activé" | tee -a "$LOG_FILE"
 fi
 
-echo -e "${GREEN}🚀 Server launched successfully!${NC}"
+# Start server
+echo "🔗 Serveur configuré pour le port $PORT" | tee -a "$LOG_FILE"
+echo "🔄 Lancement serveur Node.js + TTS..." | tee -a "$LOG_FILE"
+
+nodemon index.js --watch index.js --watch server --ext js,json --delay 2 | tee -a "$LOG_FILE"
