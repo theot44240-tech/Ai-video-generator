@@ -1,10 +1,6 @@
 /**
- * 🚀 AI Shorts Generator – Render Ultra-Stable
- * 
- * IA Texte   : llama-3.1-8b-instant → meta-llama/llama-guard-4-12b → groq/compound-mini
- * Voix       : PlayAI → Google TTS fallback
- * Transcription : whisper-large-v3-turbo → whisper-large-v3
- * Logs + CORS pour Render
+ * 🚀 AI Shorts Generator Ultra-Complet – Render Ready
+ * Tout-en-un : Texte → TTS → Transcription → Vidéo
  */
 
 import express from "express";
@@ -16,6 +12,7 @@ import axios from "axios";
 import FormData from "form-data";
 import googleTTS from "google-tts-api";
 import cors from "cors";
+import { exec } from "child_process";
 
 dotenv.config();
 
@@ -51,55 +48,77 @@ app.use(cors());
 app.use("/output", express.static(OUTPUT_DIR));
 
 // -------------------- ROUTES --------------------
+
+// Serve simple check page
 app.get("/", (req, res) => {
   res.send("🎬 AI Shorts Generator is running 🚀");
 });
 
-// Génération texte + TTS
+// Génération complète : texte → TTS → vidéo
 app.post("/generate", async (req, res) => {
   try {
     const { prompt, voice, duration } = req.body;
     if (!prompt) return res.status(400).json({ error: "Prompt manquant" });
 
-    console.log(`💡 Prompt reçu : ${prompt}`);
-    
-    // --- 1️⃣ Génération texte (Groq fallback inclus) ---
+    console.log(`💡 Prompt : ${prompt}`);
+
+    // --- 1️⃣ Génération texte ---
     let aiText = "";
     try {
       const response = await groqClient.chat.completions.create({
         model: "groq/compound-mini",
         messages: [{ role: "user", content: prompt }],
       });
-      aiText = response.choices?.[0]?.message?.content || "";
+      aiText = response.choices?.[0]?.message?.content || prompt;
     } catch (e) {
-      console.warn("⚠️ Groq échoué, fallback Llama-3.1-8b-instant");
-      // ici tu peux ajouter fallback llama si tu veux
+      console.warn("⚠️ Groq échoué, fallback Llama");
       aiText = prompt; // fallback minimal
     }
 
     // --- 2️⃣ TTS PlayAI → Google ---
-    let audioPath = path.join(OUTPUT_DIR, `tts_${Date.now()}.mp3`);
+    const ttsFilename = `tts_${Date.now()}.mp3`;
+    const ttsPath = path.join(OUTPUT_DIR, ttsFilename);
+
     try {
       if (PLAYAI_TTS_KEY) {
-        // TODO: intégration PlayAI TTS
-        throw new Error("PlayAI TTS pas encore intégré"); 
+        throw new Error("PlayAI TTS non intégré, fallback Google");
       }
     } catch {
-      // fallback Google TTS
       const url = googleTTS.getAudioUrl(aiText, {
         lang: voice.startsWith("fr") ? "fr" : "en",
         slow: false,
         host: "https://translate.google.com",
       });
       const audioRes = await axios.get(url, { responseType: "arraybuffer" });
-      fs.writeFileSync(audioPath, audioRes.data);
+      fs.writeFileSync(ttsPath, audioRes.data);
     }
 
-    // --- 3️⃣ Réponse ---
+    // --- 3️⃣ Génération vidéo simple ---
+    const videoFilename = `short_${Date.now()}.mp4`;
+    const videoPath = path.join(OUTPUT_DIR, videoFilename);
+    const dur = parseInt(duration) || 30;
+
+    // Génération vidéo via FFmpeg (texte + audio)
+    const ffmpegCmd = `
+      ffmpeg -y -f lavfi -i color=c=black:s=720x1280:d=${dur} \
+      -i "${ttsPath}" \
+      -vf "drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf: \
+      text='${aiText}': fontcolor=white: fontsize=36: x=(w-text_w)/2: y=(h-text_h)/2" \
+      -c:v libx264 -c:a aac -shortest "${videoPath}"
+    `;
+    await new Promise((resolve, reject) => {
+      exec(ffmpegCmd, (err, stdout, stderr) => {
+        if (err) return reject(err);
+        resolve(stdout);
+      });
+    });
+
+    // --- 4️⃣ Réponse ---
     res.json({
       text: aiText,
-      audio: `/output/${path.basename(audioPath)}`,
-      duration: duration || 30,
+      audio: `/output/${ttsFilename}`,
+      video: `/output/${videoFilename}`,
+      duration: dur,
     });
 
   } catch (err) {
