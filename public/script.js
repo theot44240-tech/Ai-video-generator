@@ -18,7 +18,10 @@ const generatedVideo = document.getElementById("generatedVideo");
 const downloadBtn = document.getElementById("downloadBtn");
 const retryBtn = document.getElementById("retryBtn");
 
-const API_BASE = window.location.origin;
+const API_BASE =
+  window.location.hostname.includes("render.com")
+    ? "https://ai-video-genr.onrender.com"
+    : "http://localhost:3000";
 
 /* ==========================================================
    🧩 HELPERS
