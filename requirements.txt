@@ -31,8 +31,5 @@ propcache>=0.2.0
 moviepy==2.0.0
 opencv-python-headless==4.8.1.78
 
-# Concurrency / async
-p-limit==4.0.0
-
 # Optional: for ffmpeg integration if not pre-installed
 imageio-ffmpeg==0.4.11
