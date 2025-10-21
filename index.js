@@ -1,100 +1,74 @@
-#!/usr/bin/env node
 import express from "express";
+import cors from "cors";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import dotenv from "dotenv";
-import { exec } from "child_process";
 import pLimit from "p-limit";
-import cors from "cors";
-import colors from "colors/safe";
-import morgan from "morgan";
+import { exec } from "child_process";
+import { v4 as uuidv4 } from "uuid";
 
 dotenv.config();
 
-const PORT = process.env.PORT || 3000;
-const PLAYAI_TTS_KEY = process.env.PLAYAI_TTS_KEY || null;
-const UPLOADS_DIR = "./uploads";
-const OUTPUT_DIR = "./output";
-const LOGS_DIR = "./logs";
-
-[UPLOADS_DIR, OUTPUT_DIR, LOGS_DIR].forEach(dir => {
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-});
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
+const PORT = process.env.PORT || 3000;
+
 app.use(cors());
-app.use(express.json({ limit: "15mb" }));
-app.use(morgan("dev"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-const log = (...args) => console.log(colors.cyan("[AI Generator]"), ...args);
-const errorLog = (...args) => console.error(colors.red("[AI Generator]"), ...args);
+// Folders check
+const outputDir = path.join(__dirname, "output");
+const uploadsDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir);
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
 
-// Queue async tasks
-const asyncQueue = pLimit(3);
+// Async limiter for API requests
+const limit = pLimit(5);
 
-// ======== LLM SCRIPT GENERATION ========
-async function generateScript(prompt) {
-  log(colors.yellow("💡 Generating script..."));
-  try {
-    // Placeholder: real Groq / LLaMA / GPT integration
-    return `Generated script for: "${prompt}"`;
-  } catch (err) {
-    errorLog("LLM fallback used:", err);
-    return `Fallback script for: "${prompt}"`;
-  }
-}
+// Health check
+app.get("/health", (req, res) => res.json({ status: "ok", timestamp: Date.now() }));
 
-// ======== TTS HANDLER ========
-async function generateTTS(text, filename) {
-  const outPath = path.join(OUTPUT_DIR, filename);
-  return new Promise((resolve, reject) => {
-    const ttsCommand = PLAYAI_TTS_KEY
-      ? `python3 -m playai_tts --key ${PLAYAI_TTS_KEY} --text "${text}" --output "${outPath}"`
-      : `python3 -m gtts-cli "${text}" --output "${outPath}"`;
-
-    exec(ttsCommand, (err) => {
-      if (err) return reject(err);
-      log(colors.green(`✅ TTS generated: ${filename}`));
-      resolve(outPath);
-    });
-  });
-}
-
-// ======== VIDEO HANDLER ========
-async function generateVideo(ttsPath, videoName) {
-  const outVideo = path.join(OUTPUT_DIR, videoName);
-  fs.copyFileSync(ttsPath, outVideo); // placeholder for real video composition
-  log(colors.green(`🎬 Video generated: ${videoName}`));
-  return outVideo;
-}
-
-// ======== API ROUTES ========
-app.get("/status", (req, res) => res.json({ status: "ok", timestamp: Date.now() }));
-
-app.post("/short", async (req, res) => {
-  const { prompt } = req.body;
-  if (!prompt) return res.status(400).json({ error: "No prompt provided" });
-
-  try {
-    const script = await generateScript(prompt);
-    const ttsPath = await asyncQueue(() => generateTTS(script, `${Date.now()}_tts.mp3`));
-    const videoPath = await asyncQueue(() => generateVideo(ttsPath, `${Date.now()}_video.mp4`));
-    res.json({ message: "Short generated successfully", video: videoPath });
-  } catch (err) {
-    errorLog(err);
-    res.status(500).json({ error: "Failed to generate short" });
-  }
-});
-
+// Upload endpoint
 app.post("/upload", async (req, res) => {
-  const { filename, base64 } = req.body;
-  if (!filename || !base64) return res.status(400).json({ error: "Missing filename or base64 data" });
-
-  const filePath = path.join(UPLOADS_DIR, filename);
-  fs.writeFileSync(filePath, Buffer.from(base64, "base64"));
-  log(colors.green(`📁 File uploaded: ${filename}`));
-  res.json({ message: "File uploaded successfully", path: filePath });
+    try {
+        if (!req.body.data) return res.status(400).json({ error: "No data provided" });
+        const fileId = uuidv4();
+        const filePath = path.join(uploadsDir, `${fileId}.txt`);
+        fs.writeFileSync(filePath, req.body.data);
+        res.json({ status: "success", fileId });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: "Server error" });
+    }
 });
 
-// ======== START SERVER ========
-app.listen(PORT, () => log(colors.green(`🚀 AI Shorts Generator running on port ${PORT}`)));
+// Example TTS endpoint
+app.post("/tts", async (req, res) => {
+    try {
+        const text = req.body.text;
+        if (!text) return res.status(400).json({ error: "Text missing" });
+
+        const fileId = uuidv4();
+        const outputPath = path.join(outputDir, `${fileId}.mp3`);
+
+        const ttsCmd = process.env.PLAYAI_TTS_KEY
+            ? `playai-tts-cli "${text}" "${outputPath}" --key ${process.env.PLAYAI_TTS_KEY}`
+            : `gtts-cli "${text}" --output "${outputPath}"`;
+
+        exec(ttsCmd, (err) => {
+            if (err) return res.status(500).json({ error: "TTS error" });
+            res.json({ status: "ok", file: outputPath });
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+app.listen(PORT, () => {
+    console.log(`🚀 AI Shorts Generator running on port ${PORT}`);
+});
