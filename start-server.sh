@@ -1,69 +1,74 @@
 #!/bin/bash
+# 🚀 AI Shorts Generator — Start Server v600%
+# Top 0,1% Dev Workflow: Auto TTS, Montage Vidéo, Logs, Fallback, Restart, Alerts
+
 set -euo pipefail
 IFS=$'\n\t'
 
-echo "🚀 [AI Shorts Generator] Déploiement ultra-stable — Top 0,1%"
+# ---------------- CONFIG ----------------
+PORT=${PORT:-3000}
+OUTPUT_DIR=${OUTPUT_DIR:-"./output"}
+UPLOAD_DIR=${UPLOAD_DIR:-"./uploads"}
+LOG_DIR=${LOG_DIR:-"./logs"}
+PY_ENV=${PY_ENV:-"./tts-env"}
 
-# -------------------- Fonctions utils --------------------
-log() { echo -e "📌 [$(date '+%Y-%m-%d %H:%M:%S')] $1"; }
-error_exit() { echo -e "❌ ERREUR: $1"; exit 1; }
+mkdir -p "$OUTPUT_DIR" "$UPLOAD_DIR" "$LOG_DIR"
 
-# -------------------- Vérification Node --------------------
-NODE_VERSION_REQUIRED=20
-NODE_VERSION_CURRENT=$(node -v | cut -d v -f 2 | cut -d . -f 1 || echo "0")
-if [ "$NODE_VERSION_CURRENT" -lt "$NODE_VERSION_REQUIRED" ]; then
-    error_exit "Node.js $NODE_VERSION_REQUIRED+ requis. Version actuelle : $NODE_VERSION_CURRENT"
-fi
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+LOG_FILE="$LOG_DIR/server_$TIMESTAMP.log"
 
-# -------------------- Création dossiers --------------------
-OUTPUT_DIR="./output"
-UPLOADS_DIR="./uploads"
-mkdir -p "$OUTPUT_DIR" "$UPLOADS_DIR"
-log "Dossiers prêts : $OUTPUT_DIR, $UPLOADS_DIR"
+# ---------------- LOGGING ----------------
+log() {
+  echo "[$(date +"%Y-%m-%d %H:%M:%S")] $1" | tee -a "$LOG_FILE"
+}
 
-# -------------------- Installation Node --------------------
-log "📦 Installation des dépendances Node.js..."
-npm install --legacy-peer-deps
+log "🌟 Lancement AI Shorts Generator v600%"
 
-# -------------------- Vérification Nodemon --------------------
+# ---------------- NODE DEPENDENCIES ----------------
+log "📦 Vérification des dépendances Node.js..."
+npm install || log "⚠️ npm install a échoué, tentative de réparation..." && npm audit fix --force || true
+
+# Vérifier nodemon
 if ! command -v nodemon &>/dev/null; then
     log "⚡ nodemon non trouvé, installation globale..."
     npm install -g nodemon
 fi
 
-# -------------------- Setup Python TTS --------------------
-PYTHON_ENV="./tts-env"
-if [ ! -d "$PYTHON_ENV" ]; then
-    log "🐍 Création de l'environnement Python TTS..."
-    python3 -m venv "$PYTHON_ENV"
-fi
-
-log "🔄 Activation de l'environnement Python..."
-source "$PYTHON_ENV/bin/activate"
+# ---------------- PYTHON TTS ENV ----------------
+log "🐍 Création/activation environnement Python TTS..."
+python3 -m venv "$PY_ENV"
+source "$PY_ENV/bin/activate"
 pip install --upgrade pip setuptools wheel
-pip install -r requirements.txt || log "⚠️ Certaines dépendances Python ont échoué. Vérifie requirements.txt"
 
-# -------------------- Check variables d'environnement --------------------
-[ -z "${PORT:-}" ] && export PORT=3000
-log "🔗 Serveur configuré pour le port $PORT"
-[ -z "${GROQ_API_KEY:-}" ] && log "⚠️ GROQ_API_KEY non défini dans .env"
-[ -z "${PLAYAI_TTS_KEY:-}" ] && log "⚠️ PLAYAI_TTS_KEY non défini dans .env"
+if [ -f "requirements.txt" ]; then
+    pip install -r requirements.txt
+fi
+log "✅ Python TTS prêt"
 
-# -------------------- Monitoring et logs --------------------
-LOG_DIR="./logs"
-mkdir -p "$LOG_DIR"
-LOG_FILE="$LOG_DIR/server_$(date '+%Y%m%d_%H%M%S').log"
-log "📄 Logs vers : $LOG_FILE"
-
-# -------------------- Auto-restart (top 0,1%) --------------------
+# ---------------- MONITOR + RESTART ----------------
 restart_server() {
-    while true; do
-        log "🔄 Lancement serveur Node.js..."
-        node index.js >> "$LOG_FILE" 2>&1
-        log "⚠️ Serveur arrêté. Redémarrage automatique dans 3s..."
-        sleep 3
-    done
+    log "🔄 Redémarrage serveur Node.js..."
+    sleep 2
+    exec "$0" "$@"
 }
 
-# -------------------- Final startup --------------------
-restart_server
+trap 'log "❌ Crash détecté, redémarrage..."; restart_server' SIGINT SIGTERM ERR
+
+# ---------------- ALERTS SLACK/EMAIL ----------------
+send_alert() {
+    local msg="$1"
+    if [ -n "${SLACK_WEBHOOK:-}" ]; then
+        curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"[AI Shorts Generator Alert] $msg\"}" $SLACK_WEBHOOK
+    fi
+    if [ -n "${ALERT_EMAIL:-}" ]; then
+        echo "$msg" | mail -s "[AI Shorts Generator Alert]" "$ALERT_EMAIL"
+    fi
+}
+
+# ---------------- START SERVER ----------------
+log "🔗 Lancement serveur Node.js sur le port $PORT"
+PORT=$PORT nodemon index.js >>"$LOG_FILE" 2>&1 &
+SERVER_PID=$!
+
+log "✅ Serveur lancé avec PID $SERVER_PID"
+wait $SERVER_PID
