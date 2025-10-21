@@ -1,35 +1,30 @@
-# TTS Engines
+# TTS
 gTTS==2.5.4
 pyttsx3==2.90
 
-# Audio manipulation
+# Audio processing
 pydub==0.25.1
 soundfile==0.12.1
+
+# Scientific / audio libraries
 numpy==1.25.2
 scipy==1.11.1
 
-# Requests & HTTP
-requests>=2.27,<3
-aiohttp>=3.8.0,<4
-aiohappyeyeballs>=2.5.0
+# HTTP requests / async
+requests>=2.32.5,<3
+aiohttp>=3.13.1,<4
+aiohappyeyeballs>=2.6.1
 aiosignal>=1.4.0
-yarl>=1.17.0,<2.0
-multidict>=4.5,<7.0
-charset_normalizer>=2.0,<4.0
-idna>=2.5,<4
-urllib3>=1.21.1,<3
-certifi>=2017.4.17
+yarl>=1.22.0,<2
+multidict>=6.7.0,<7
 
-# Environment & utils
-python-dotenv>=1.0.0,<2
+# Utilities
+python-dotenv==1.1.1
 pathlib>=1.0.1
 loguru>=0.7.3,<1
-click>=7.1,<8.2
-propcache>=0.2.0
+click>=8.1.8,<8.2
+propcache>=0.4.1
 
 # Video processing
 moviepy==2.0.0
 opencv-python-headless==4.8.1.78
-
-# Optional: for ffmpeg integration if not pre-installed
-imageio-ffmpeg==0.4.11
