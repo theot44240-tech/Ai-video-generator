@@ -1,38 +1,41 @@
 {
   "name": "ai-shorts-generator",
-  "version": "2.0.3",
-  "description": "AI Shorts Generator - ultra stable, top 0.1%",
+  "version": "2.0.4",
+  "description": "AI Shorts Generator - Crée automatiquement des vidéos Shorts avec TTS et génération d'images",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "start": "bash ./start-server.sh",
     "dev": "nodemon index.js",
-    "lint": "eslint . --ext .js,.mjs",
-    "test": "echo \"No tests configured\""
+    "build": "npm install"
   },
   "engines": {
     "node": ">=25.0.0"
   },
   "dependencies": {
-    "axios": "^1.5.0",
-    "cors": "^2.8.5",
+    "axios": "^1.7.0",
     "express": "^4.18.2",
-    "form-data": "^4.0.0",
-    "p-limit": "^4.0.0",
-    "dotenv": "^16.3.1",
-    "openai": "^4.3.1",
-    "uuid": "^9.0.1"
+    "form-data": "^4.1.0",
+    "fluent-ffmpeg": "^2.1.2",
+    "p-limit": "^3.1.0",
+    "dotenv": "^1.1.1",
+    "openai": "^5.3.0",
+    "cors": "^2.8.5",
+    "multer": "^1.4.5-lts.1",
+    "uuid": "^9.0.0",
+    "ws": "^8.13.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10",
-    "eslint": "^8.50.0"
+    "nodemon": "^3.1.10"
   },
   "keywords": [
     "AI",
-    "Shorts",
-    "Video",
+    "video",
     "TTS",
-    "Render"
+    "YouTube",
+    "Shorts",
+    "automation",
+    "render"
   ],
   "author": "Théo",
   "license": "MIT"
