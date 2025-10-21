@@ -1,66 +1,100 @@
-// tts.js
-import fs from "fs";
-import path from "path";
-import axios from "axios";
-import { fileURLToPath } from "url";
-import googleTTS from "google-tts-api";
+// ===============================================
+// tts.js - AI Shorts Generator
+// TTS Manager - PlayAI + Google TTS fallback
+// Optimisé top 0,1% - Compatible Node.js
+// ===============================================
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import fs from 'fs';
+import path from 'path';
+import axios from 'axios';
+import crypto from 'crypto';
+import { exec } from 'child_process';
 
-const PLAYAI_API_KEY = process.env.PLAYAI_API_KEY || "";
-const TTS_OUTPUT_DIR = path.join(__dirname, "tts_output");
+const LOG_FILE = './logs/tts.log';
+const AUDIO_DIR = './audio';
 
-// Crée le dossier de sortie si besoin
-if (!fs.existsSync(TTS_OUTPUT_DIR)) {
-  fs.mkdirSync(TTS_OUTPUT_DIR, { recursive: true });
+// Crée le dossier audio si nécessaire
+if (!fs.existsSync(AUDIO_DIR)) fs.mkdirSync(AUDIO_DIR);
+
+// Fonction utilitaire pour logger proprement
+function log(message) {
+    const time = new Date().toISOString();
+    const logLine = `[${time}] ${message}`;
+    console.log(logLine);
+    fs.appendFileSync(LOG_FILE, logLine + '\n');
 }
 
-export async function generateTTS(text, voice = "en", filename = "output.mp3") {
-  const filePath = path.join(TTS_OUTPUT_DIR, filename);
+// Génère un hash unique du texte pour éviter les doublons
+function hashText(text) {
+    return crypto.createHash('md5').update(text).digest('hex');
+}
 
-  try {
-    // --- 1️⃣ Essai avec PlayAI (si clé présente) ---
-    if (PLAYAI_API_KEY) {
-      console.log("🔊 Utilisation de PlayAI TTS...");
+// Fonction principale TTS
+export async function textToSpeech(text, options = {}) {
+    const voice = options.voice || 'fr-FR';
+    const format = options.format || 'mp3';
+    const hash = hashText(text + voice);
+    const filename = path.join(AUDIO_DIR, `${hash}.${format}`);
 
-      const response = await axios.post(
-        "https://api.play.ai/v1/tts",
-        {
-          text,
-          voice: voice === "fr" ? "charlotte" : "james", // exemple FR/EN
-          format: "mp3",
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${PLAYAI_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          responseType: "arraybuffer",
-        }
-      );
-
-      fs.writeFileSync(filePath, response.data);
-      console.log("✅ Audio généré via PlayAI :", filePath);
-      return filePath;
+    // Si le fichier existe déjà, on le réutilise
+    if (fs.existsSync(filename)) {
+        log(`✅ TTS déjà généré pour ce texte : ${filename}`);
+        return filename;
     }
 
-    // --- 2️⃣ Fallback automatique vers Google TTS ---
-    console.log("🎙️ PlayAI indisponible, utilisation de Google TTS...");
+    log(`🎤 Génération TTS pour texte : "${text.slice(0, 50)}..." avec la voix ${voice}`);
 
-    const url = googleTTS.getAudioUrl(text, {
-      lang: voice === "fr" ? "fr" : "en",
-      slow: false,
-      host: "https://translate.google.com",
-    });
+    try {
+        // -----------------------
+        // 1️⃣ Essai PlayAI
+        // -----------------------
+        if (process.env.PLAYAI_API_KEY) {
+            try {
+                const response = await axios.post(
+                    'https://api.playai.com/tts',
+                    { text, voice },
+                    {
+                        responseType: 'arraybuffer',
+                        headers: { 'Authorization': `Bearer ${process.env.PLAYAI_API_KEY}` }
+                    }
+                );
+                fs.writeFileSync(filename, Buffer.from(response.data));
+                log(`✅ TTS PlayAI généré : ${filename}`);
+                return filename;
+            } catch (err) {
+                log(`⚠️ PlayAI TTS échoué : ${err.message}`);
+            }
+        }
 
-    const audio = await axios.get(url, { responseType: "arraybuffer" });
-    fs.writeFileSync(filePath, audio.data);
+        // -----------------------
+        // 2️⃣ Fallback Google TTS (via Python script)
+        // -----------------------
+        const pyScript = path.join(process.cwd(), 'tts_script.py');
+        if (fs.existsSync(pyScript)) {
+            await new Promise((resolve, reject) => {
+                const cmd = `python ${pyScript} "${text.replace(/"/g, '\\"')}" "${filename}" "${voice}"`;
+                exec(cmd, (error, stdout, stderr) => {
+                    if (error) {
+                        log(`❌ Google TTS échoué : ${error.message}`);
+                        reject(error);
+                    } else {
+                        log(`✅ TTS Google généré : ${filename}`);
+                        resolve();
+                    }
+                });
+            });
+            return filename;
+        }
 
-    console.log("✅ Audio généré via Google TTS :", filePath);
-    return filePath;
-  } catch (error) {
-    console.error("❌ Erreur lors de la génération TTS :", error.message);
-    throw error;
-  }
+        throw new Error('Aucun moteur TTS disponible !');
+    } catch (err) {
+        log(`❌ Erreur TTS : ${err.message}`);
+        throw err;
+    }
 }
+
+// Exemples d'utilisation
+// (décommenter pour tester)
+// textToSpeech("Bonjour ! Ceci est un test.", { voice: "fr-FR" })
+//     .then(f => console.log("Fichier audio généré :", f))
+//     .catch(err => console.error(err));
