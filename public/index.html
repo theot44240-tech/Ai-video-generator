@@ -1,27 +1,92 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Shorts Generator</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AI Shorts Generator – Crée des vidéos YouTube Shorts automatiquement grâce à l'IA." />
+  <meta name="theme-color" content="#111111" />
+  
+  <title>AI Shorts Generator 🚀</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="/favicon.ico" />
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Preload for performance -->
+  <link rel="preload" href="/script.js" as="script">
 </head>
+
 <body>
-  <div class="container">
-    <h1>🎬 AI Shorts Generator</h1>
+  <div class="app-container">
+    <header>
+      <h1>🎬 AI Shorts Generator</h1>
+      <p class="subtitle">Génère des vidéos YouTube Shorts automatiquement avec la puissance de l’IA 🤖</p>
+    </header>
 
-    <label for="prompt">Entrez votre idée ou sujet pour le short :</label>
-    <textarea id="prompt" placeholder="Ex: Comment fonctionne une éclipse solaire ?"></textarea>
+    <main>
+      <!-- Zone du formulaire -->
+      <section class="form-section">
+        <label for="prompt" class="label">💡 Entre ton idée de short :</label>
+        <textarea id="prompt" placeholder="Ex : La motivation à ne jamais abandonner..." rows="4"></textarea>
 
-    <button id="generateBtn">Générer Short</button>
+        <div class="options">
+          <label for="voice">🎤 Voix :</label>
+          <select id="voice">
+            <option value="fr-male">Français (Homme)</option>
+            <option value="fr-female">Français (Femme)</option>
+            <option value="en-male">English (Male)</option>
+            <option value="en-female">English (Female)</option>
+          </select>
 
-    <pre id="output" style="display:none;"></pre>
+          <label for="duration">⏱ Durée cible :</label>
+          <select id="duration">
+            <option value="20">20s</option>
+            <option value="30" selected>30s</option>
+            <option value="45">45s</option>
+            <option value="60">60s</option>
+            <option value="70">70s</option>
+          </select>
+        </div>
+
+        <button id="generateBtn" class="btn-primary">
+          <i class="fas fa-bolt"></i> Générer le Short
+        </button>
+      </section>
+
+      <!-- Zone de progression -->
+      <section id="progressSection" class="hidden">
+        <div class="loader"></div>
+        <p id="progressText">Génération en cours...</p>
+      </section>
+
+      <!-- Zone du résultat -->
+      <section id="resultSection" class="hidden">
+        <h2>✨ Résultat :</h2>
+        <video id="generatedVideo" controls></video>
+
+        <div class="actions">
+          <button id="downloadBtn" class="btn-secondary">
+            <i class="fas fa-download"></i> Télécharger
+          </button>
+          <button id="retryBtn" class="btn-tertiary">
+            <i class="fas fa-redo"></i> Recommencer
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>⚡ Fait avec ❤️ par l’IA – Optimisé pour Render & Node.js</p>
+    </footer>
   </div>
 
-  <footer>
-    © 2025 AI Shorts Generator — theot44240-tech
-  </footer>
-
-  <script src="script.js"></script>
+  <!-- JS -->
+  <script src="script.js" defer></script>
 </body>
 </html>
