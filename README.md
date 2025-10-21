@@ -1,17 +1,19 @@
-# AI Shorts Generator
-
-🎬 Générateur de Shorts vidéos basé sur AI  
-Version finale optimisée pour Render / Node.js
+# 🎬 AI Shorts Generator  
+> Automatically generate short, **motivational**, ready-to-post videos for YouTube, TikTok, and Instagram — powered by AI.
 
 ---
 
-## Description
+## 🚀 Main Features
 
-Cette application permet de générer rapidement des scripts pour des Shorts vidéos à partir d'un prompt.  
-Le front-end minimal et responsive est servi par Express depuis `/public`.  
-Le backend Node.js gère les endpoints pour générer les scripts.
+- 🧠 **AI Script Generation** – short scripts using Groq API (Llama 3.1 / Mistral)
+- 🎤 **Smart TTS System** – natural voices with Play.ht → GoogleTTS fallback
+- 🎞️ **Video Generator** – combines image, audio, and subtitles automatically
+- 🧰 **Plug-and-play REST API** for integrations and automation
+- 💻 **Lightweight Web Interface** (HTML/CSS/JS)
+- 🌍 **Multilingual support** (French / English / Spanish)
+- 🧱 **Modular architecture** – Node.js + Python (for TTS engine)
 
 ---
 
-## Structure du projet
+## 🧩 Project Structure
 
