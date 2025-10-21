@@ -1,122 +1,119 @@
 /**
- * 🎬 AI Shorts Generator — Blockbuster v600%
- * - Texte IA → Script ultra-cinématique
- * - TTS multi-langues + effet voix dynamique selon sentiment
- * - Sous-titres animés mot par mot avec effets visuels 3D
- * - Images générées IA + transitions cinématiques
- * - Musique AI adaptative selon humeur du texte
- * - Montage vidéo 20-70s optimisé pour mobile
- * - Upload YouTube & TikTok
- * - Logging avancé + monitoring + fallback complet
+ * 🚀 AI Shorts Generator — Render Ultra-Stable Top 0,1%
  */
 
 import express from "express";
 import dotenv from "dotenv";
+import OpenAI from "openai";
+import axios from "axios";
 import fs from "fs";
 import path from "path";
-import axios from "axios";
-import cors from "cors";
-import { google } from "googleapis";
 import FormData from "form-data";
 import googleTTS from "google-tts-api";
-import { exec } from "child_process";
-import crypto from "crypto";
+import cors from "cors";
+import pLimit from "p-limit";
 
 dotenv.config();
 
-// ---------------- CONFIG ----------------
 const PORT = process.env.PORT || 3000;
-const OUTPUT_DIR = process.env.OUTPUT_DIR || "./output";
-const UPLOAD_DIR = process.env.UPLOAD_DIR || "./uploads";
+const OUTPUT_DIR = "./output";
+const UPLOAD_DIR = "./uploads";
+const REQUEST_TIMEOUT_MS = 60_000;
+const CONCURRENCY_LIMIT = 3;
 
-[OUTPUT_DIR, UPLOAD_DIR].forEach(d => { if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true }); });
+// Création dossiers auto
+[OUTPUT_DIR, UPLOAD_DIR].forEach(dir => { if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true }) });
 
-const log = (level, msg) => console.log(`[${new Date().toISOString()}][${level.toUpperCase()}] ${msg}`);
+// API Keys
+const GROQ_API_KEY = process.env.GROQ_API_KEY || "";
+const PLAYAI_TTS_KEY = process.env.PLAYAI_TTS_KEY || "";
+if (!GROQ_API_KEY) console.warn("⚠️ GROQ_API_KEY manquant !");
+if (!PLAYAI_TTS_KEY) console.warn("⚠️ PLAYAI_TTS_KEY manquant, fallback Google TTS activé");
 
-// ---------------- EXPRESS ----------------
-const app = express();
-app.use(cors());
-app.use(express.json());
+// Clients
+const groqClient = new OpenAI({ apiKey: GROQ_API_KEY, baseURL: "https://api.groq.com/openai/v1" });
+const axiosClient = axios.create({ timeout: REQUEST_TIMEOUT_MS, maxContentLength: Infinity, maxBodyLength: Infinity });
+const limit = pLimit(CONCURRENCY_LIMIT);
 
-// ---------------- HELPERS BLOCKBUSTER ----------------
+// Utils
+const log = msg => console.log(`[AI Shorts Generator] ${new Date().toISOString()} | ${msg}`);
+const genFilePath = (prefix, ext) => path.join(OUTPUT_DIR, `${prefix}_${Date.now()}.${ext}`);
+const safeWriteFile = async (filePath, data) => fs.promises.writeFile(filePath, data);
 
-// 1️⃣ TTS dynamique selon sentiment
-async function generateTTS(text, lang = "fr", sentiment = "neutral") {
-  const ttsFile = path.join(OUTPUT_DIR, `tts_${crypto.randomUUID()}.mp3`);
+// TTS
+async function generateTTS(text, lang = "fr") {
   try {
-    // Modifier vitesse et pitch selon sentiment
-    const slow = sentiment === "sad";
-    const pitch = sentiment === "excited" ? 1.3 : 1.0;
-    const url = googleTTS.getAudioUrl(text, { lang, slow });
-    const res = await axios.get(url, { responseType: "arraybuffer" });
-    fs.writeFileSync(ttsFile, Buffer.from(res.data));
-    return ttsFile;
-  } catch (e) { log("warn", `TTS failed: ${e}`); throw e; }
+    if (PLAYAI_TTS_KEY) {
+      const res = await axiosClient.post("https://api.play.ai/tts", { text, voice: "fr-FR" }, { headers: { "Authorization": `Bearer ${PLAYAI_TTS_KEY}` }, responseType: "arraybuffer" });
+      return res.data;
+    } else {
+      const url = googleTTS.getAudioUrl(text, { lang, slow: false, host: "https://translate.google.com" });
+      const res = await axios.get(url, { responseType: "arraybuffer" });
+      return res.data;
+    }
+  } catch (err) { log("⚠️ TTS error: " + err.message); throw err; }
 }
 
-// 2️⃣ Génération image + transition AI
-async function generateImageCinematic(prompt, style="cinematic") {
-  const imgFile = path.join(OUTPUT_DIR, `img_${crypto.randomUUID()}.png`);
-  const imgData = await axios.get(`https://picsum.photos/720/1280`, { responseType: "arraybuffer" });
-  fs.writeFileSync(imgFile, imgData.data);
-  return imgFile;
-}
-
-// 3️⃣ Sous-titres animés 3D mot par mot
-function generateSRT3D(text, duration) {
-  const words = text.split(" ");
-  let srt = "", time = 0;
-  words.forEach((w, i) => {
-    const start = time.toFixed(2);
-    time += Math.max(0.25, duration / words.length);
-    const end = Math.min(time, duration).toFixed(2);
-    srt += `${i+1}\n00:00:${start.padStart(5,"0")},000 --> 00:00:${end.padStart(5,"0")},000\n${w}\n\n`;
-  });
-  const file = path.join(OUTPUT_DIR, `sub3D_${crypto.randomUUID()}.srt`);
-  fs.writeFileSync(file, srt);
-  return file;
-}
-
-// 4️⃣ Montage vidéo blockbuster
-async function createVideoBlockbuster(ttsFile, text) {
-  const duration = Math.min(Math.max(20, text.split(" ").length * 0.45), 70);
-  const imgFile = await generateImageCinematic(text);
-  const subFile = generateSRT3D(text, duration);
-  const videoFile = path.join(OUTPUT_DIR, `video_${crypto.randomUUID()}.mp4`);
-
-  await new Promise((resolve, reject) => {
-    const cmd = `
-      ffmpeg -y -loop 1 -i ${imgFile} -i ${ttsFile} \
-      -vf "scale=720:1280,format=yuv420p,subtitles=${subFile}:force_style='Fontsize=36,PrimaryColour=&H00FFFF&'" \
-      -c:v libx264 -t ${duration} -c:a aac -shortest ${videoFile}
-    `;
-    exec(cmd, (err) => err ? reject(err) : resolve());
-  });
-
-  fs.unlinkSync(imgFile);
-  fs.unlinkSync(subFile);
-  return videoFile;
-}
-
-// ---------------- ENDPOINT BLOCKBUSTER ----------------
-app.post("/generate-and-upload", async (req, res) => {
-  const { prompt, youtubeTitle, youtubeDescription, tiktokCaption, sentiment } = req.body;
-  log("info", `Workflow Blockbuster pour prompt: ${prompt}`);
-
-  try {
-    const aiText = `🎬 Script blockbuster généré pour: ${prompt}`;
-    const ttsFile = await generateTTS(aiText, "fr", sentiment || "neutral");
-    const videoFile = await createVideoBlockbuster(ttsFile, aiText);
-
-    res.json({ success: true, aiText, ttsFile, videoFile });
-  } catch (e) {
-    log("error", `Erreur workflow blockbuster: ${e}`);
-    res.status(500).json({ error: e.toString() });
+// AI Text avec fallback
+async function generateText(prompt) {
+  const models = ["llama-3.1-8b-instant", "meta-llama/llama-guard-4-12b", "groq/compound-mini"];
+  for (const model of models) {
+    try {
+      log(`🧠 Generating with model: ${model}`);
+      const response = await groqClient.chat.completions.create({ model, messages: [{ role: "user", content: prompt }] });
+      return response.choices[0].message.content;
+    } catch { log(`⚠️ Model ${model} failed, trying next...`); }
   }
+  throw new Error("All AI models failed");
+}
+
+// Transcription fallback
+async function transcribeAudio(filePath) {
+  const models = ["whisper-large-v3-turbo", "whisper-large-v3"];
+  for (const model of models) {
+    try {
+      log(`🎤 Transcribing with: ${model}`);
+      const form = new FormData();
+      form.append("file", fs.createReadStream(filePath));
+      form.append("model", model);
+      const res = await axiosClient.post("https://api.openai.com/v1/audio/transcriptions", form, { headers: { ...form.getHeaders(), Authorization: `Bearer ${process.env.OPENAI_API_KEY}` } });
+      return res.data.text;
+    } catch { log(`⚠️ Transcription ${model} failed, trying next...`); }
+  }
+  throw new Error("All transcription models failed");
+}
+
+// Express
+const app = express();
+app.use(express.json({ limit: "20mb" }));
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+app.use("/output", express.static(OUTPUT_DIR));
+app.use("/uploads", express.static(UPLOAD_DIR));
+
+// Routes
+app.post("/generate-short", async (req, res) => {
+  const { prompt } = req.body;
+  if (!prompt) return res.status(400).json({ error: "Prompt manquant" });
+
+  try {
+    const text = await limit(() => generateText(prompt));
+    const audioBuffer = await limit(() => generateTTS(text));
+    const audioPath = genFilePath("tts", "mp3");
+    await safeWriteFile(audioPath, audioBuffer);
+    res.json({ text, audioPath });
+  } catch (err) { log("❌ Error /generate-short: " + err.message); res.status(500).json({ error: err.message }); }
 });
 
-// ---------------- HEALTH ----------------
-app.get("/health", (req, res) => res.json({ status: "ok", uptime: process.uptime(), memory: process.memoryUsage() }));
+app.post("/transcribe", async (req, res) => {
+  const { filePath } = req.body;
+  if (!filePath || !fs.existsSync(filePath)) return res.status(400).json({ error: "Fichier manquant ou inexistant" });
 
-// ---------------- START ----------------
-app.listen(PORT, () => log("info", `🚀 Serveur AI Shorts Generator Blockbuster v600% lancé sur le port ${PORT}`));
+  try {
+    const transcription = await limit(() => transcribeAudio(filePath));
+    res.json({ transcription });
+  } catch (err) { log("❌ Error /transcribe: " + err.message); res.status(500).json({ error: err.message }); }
+});
+
+// Server
+app.listen(PORT, () => log(`🚀 Serveur ultra-stable Render-ready sur port ${PORT}`));
