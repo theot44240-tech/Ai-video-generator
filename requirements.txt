@@ -1,0 +1,27 @@
+# =========================
+# AI Shorts Generator - Python dependencies
+# =========================
+
+# Text-to-Speech
+gTTS==2.5.4
+
+# HTTP requests (robuste et stable)
+requests>=2.27,<3
+
+# Command-line utilities for scripts
+click>=7.1,<8.2
+
+# Audio handling (optionnel, si besoin pour conversion ou manipulation)
+pydub>=0.25.1,<1
+
+# File system and path utilities
+pathlib>=1.0.1
+
+# Environment variable loader (facultatif si tu veux lire .env en Python)
+python-dotenv>=1.0.0,<2
+
+# Optional: logging helper
+loguru>=0.6.0,<1
+
+# Optional: asyncio for async TTS or file handling
+aiohttp>=3.8.0,<4
