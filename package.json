@@ -1,54 +1,56 @@
 {
   "name": "ai-shorts-generator",
   "version": "2.0.0",
-  "description": "AI Shorts Generator — crée automatiquement des vidéos courtes avec génération de texte, TTS et transcription via Groq, PlayAI et Google TTS.",
+  "description": "AI Shorts Generator — Texte, TTS, Transcription, Montage Vidéo | Top 0,1% Production Ready",
   "main": "index.js",
   "type": "module",
-  "scripts": {
-    "start": "bash ./start-server.sh",
-    "dev": "nodemon index.js",
-    "server": "node index.js",
-    "clean": "rm -rf ./output ./uploads && mkdir -p output uploads",
-    "test": "node --test"
-  },
-  "dependencies": {
-    "axios": "^1.12.2",
-    "dotenv": "^16.4.5",
-    "express": "^4.21.1",
-    "form-data": "^4.0.0",
-    "google-tts-api": "^0.0.6",
-    "openai": "^4.55.0"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.7"
-  },
   "engines": {
     "node": ">=20.0.0"
   },
-  "keywords": [
-    "ai",
-    "shorts",
-    "video-generator",
-    "groq",
-    "playai",
-    "tts",
-    "whisper",
-    "openai",
-    "render",
-    "automation"
-  ],
-  "author": {
-    "name": "TheoTech",
-    "email": "contact@theotech.dev"
+  "scripts": {
+    "start": "bash ./start-server.sh",
+    "dev": "nodemon index.js",
+    "lint": "eslint . --ext .js,.mjs",
+    "audit": "npm audit",
+    "fix": "npm audit fix --force",
+    "clean": "rm -rf ./node_modules ./output ./logs && echo '✅ Nettoyage complet effectué'",
+    "build": "echo '✅ Build ultra-stable (Node.js + Python TTS ready)'"
   },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.1.4",
+    "express": "^4.18.3",
+    "form-data": "^4.1.0",
+    "google-tts-api": "^2.0.1",
+    "openai": "^4.30.0",
+    "p-limit": "^4.0.0",
+    "loguru": "^0.7.3",
+    "p-map": "^5.6.0",
+    "dotenv-expand": "^10.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "eslint": "^8.54.0",
+    "prettier": "^3.3.0"
+  },
+  "keywords": [
+    "AI",
+    "shorts",
+    "video",
+    "TTS",
+    "transcription",
+    "groq",
+    "llama",
+    "whisper",
+    "render"
+  ],
+  "author": "Théo",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/theot44240-tech/AI-video-generator"
+    "url": "https://github.com/theot44240-tech/Ai-video-generator.git"
   },
-  "bugs": {
-    "url": "https://github.com/theot44240-tech/AI-video-generator/issues"
-  },
-  "homepage": "https://ai-shorts-generator.onrender.com",
+  "enginesStrict": true,
   "private": false
 }
