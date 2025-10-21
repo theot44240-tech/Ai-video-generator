@@ -1,6 +1,6 @@
 /**
- * 🚀 AI Shorts Generator Ultra-Complet – Render Ready
- * Tout-en-un : Texte → TTS → Transcription → Vidéo
+ * 🚀 AI Shorts Generator Ultra-Top 0,1% – Render Ready
+ * Pipeline complet : Texte → TTS → Vidéo → Transcription
  */
 
 import express from "express";
@@ -22,6 +22,7 @@ const OUTPUT_DIR = process.env.OUTPUT_DIR || "./output";
 const UPLOADS_DIR = "./uploads";
 const GROQ_API_KEY = process.env.GROQ_API_KEY || "";
 const PLAYAI_TTS_KEY = process.env.PLAYAI_TTS_KEY || "";
+const OPENAI_KEY = process.env.OPENAI_KEY || ""; // Whisper fallback
 const REQUEST_TIMEOUT_MS = 60_000;
 
 [OUTPUT_DIR, UPLOADS_DIR].forEach(dir => {
@@ -33,6 +34,8 @@ const groqClient = new OpenAI({
   apiKey: GROQ_API_KEY,
   baseURL: "https://api.groq.com/openai/v1",
 });
+
+const openaiClient = new OpenAI({ apiKey: OPENAI_KEY });
 
 const axiosClient = axios.create({
   timeout: REQUEST_TIMEOUT_MS,
@@ -48,13 +51,10 @@ app.use(cors());
 app.use("/output", express.static(OUTPUT_DIR));
 
 // -------------------- ROUTES --------------------
-
-// Serve simple check page
 app.get("/", (req, res) => {
-  res.send("🎬 AI Shorts Generator is running 🚀");
+  res.send("🎬 AI Shorts Generator Ultra ✅");
 });
 
-// Génération complète : texte → TTS → vidéo
 app.post("/generate", async (req, res) => {
   try {
     const { prompt, voice, duration } = req.body;
@@ -72,13 +72,12 @@ app.post("/generate", async (req, res) => {
       aiText = response.choices?.[0]?.message?.content || prompt;
     } catch (e) {
       console.warn("⚠️ Groq échoué, fallback Llama");
-      aiText = prompt; // fallback minimal
+      aiText = prompt;
     }
 
     // --- 2️⃣ TTS PlayAI → Google ---
     const ttsFilename = `tts_${Date.now()}.mp3`;
     const ttsPath = path.join(OUTPUT_DIR, ttsFilename);
-
     try {
       if (PLAYAI_TTS_KEY) {
         throw new Error("PlayAI TTS non intégré, fallback Google");
@@ -93,12 +92,11 @@ app.post("/generate", async (req, res) => {
       fs.writeFileSync(ttsPath, audioRes.data);
     }
 
-    // --- 3️⃣ Génération vidéo simple ---
+    // --- 3️⃣ Génération vidéo ---
     const videoFilename = `short_${Date.now()}.mp4`;
     const videoPath = path.join(OUTPUT_DIR, videoFilename);
     const dur = parseInt(duration) || 30;
 
-    // Génération vidéo via FFmpeg (texte + audio)
     const ffmpegCmd = `
       ffmpeg -y -f lavfi -i color=c=black:s=720x1280:d=${dur} \
       -i "${ttsPath}" \
@@ -107,17 +105,33 @@ app.post("/generate", async (req, res) => {
       -c:v libx264 -c:a aac -shortest "${videoPath}"
     `;
     await new Promise((resolve, reject) => {
-      exec(ffmpegCmd, (err, stdout, stderr) => {
+      exec(ffmpegCmd, (err) => {
         if (err) return reject(err);
-        resolve(stdout);
+        resolve();
       });
     });
 
-    // --- 4️⃣ Réponse ---
+    // --- 4️⃣ Transcription automatique Whisper ---
+    let transcription = "";
+    try {
+      const form = new FormData();
+      form.append("file", fs.createReadStream(ttsPath));
+      const whisperRes = await openaiClient.audio.transcriptions.create({
+        file: fs.createReadStream(ttsPath),
+        model: "whisper-1"
+      });
+      transcription = whisperRes.text;
+    } catch (err) {
+      console.warn("⚠️ Transcription Whisper échouée :", err.message);
+      transcription = aiText;
+    }
+
+    // --- 5️⃣ Réponse finale ---
     res.json({
       text: aiText,
       audio: `/output/${ttsFilename}`,
       video: `/output/${videoFilename}`,
+      transcription,
       duration: dur,
     });
 
