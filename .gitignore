@@ -1,7 +1,25 @@
+# Node.js
 node_modules/
-.env
-uploads/
-.DS_Store
 package-lock.json
+
+# Environnements
 .env
-.env
+tts/tts-env/
+
+# Fichiers temporaires
+uploads/
+output/
+logs/
+__pycache__/
+*.pyc
+*.wav
+.DS_Store
+
+# Codespaces
+.vscode/
+.idea/
+node_modules/
+tts-env/
+logs/
+audio/
+*.env
