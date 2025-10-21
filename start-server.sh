@@ -1,43 +1,69 @@
 #!/bin/bash
-# =============================================
-# 🚀 AI Shorts Generator – Render Ultra-Stable
-# =============================================
+set -euo pipefail
+IFS=$'\n\t'
 
-set -e  # Arrêt immédiat si une commande échoue
-set -o pipefail
+echo "🚀 [AI Shorts Generator] Déploiement ultra-stable — Top 0,1%"
 
-echo "🌟 Démarrage du serveur AI Shorts Generator..."
+# -------------------- Fonctions utils --------------------
+log() { echo -e "📌 [$(date '+%Y-%m-%d %H:%M:%S')] $1"; }
+error_exit() { echo -e "❌ ERREUR: $1"; exit 1; }
 
-# --- 1️⃣ Préparer les dossiers ---
-OUTPUT_DIR="${OUTPUT_DIR:-./output}"
+# -------------------- Vérification Node --------------------
+NODE_VERSION_REQUIRED=20
+NODE_VERSION_CURRENT=$(node -v | cut -d v -f 2 | cut -d . -f 1 || echo "0")
+if [ "$NODE_VERSION_CURRENT" -lt "$NODE_VERSION_REQUIRED" ]; then
+    error_exit "Node.js $NODE_VERSION_REQUIRED+ requis. Version actuelle : $NODE_VERSION_CURRENT"
+fi
+
+# -------------------- Création dossiers --------------------
+OUTPUT_DIR="./output"
 UPLOADS_DIR="./uploads"
-
 mkdir -p "$OUTPUT_DIR" "$UPLOADS_DIR"
-echo "📁 Dossiers prêts : $OUTPUT_DIR, $UPLOADS_DIR"
+log "Dossiers prêts : $OUTPUT_DIR, $UPLOADS_DIR"
 
-# --- 2️⃣ Installer les dépendances Node.js ---
-echo "📦 Installation des dépendances Node.js..."
-npm install --no-audit --silent
+# -------------------- Installation Node --------------------
+log "📦 Installation des dépendances Node.js..."
+npm install --legacy-peer-deps
 
-# --- 3️⃣ Installer Nodemon global si absent (pour dev) ---
-if ! command -v nodemon >/dev/null 2>&1; then
-  echo "⚡ nodemon non trouvé, installation globale..."
-  npm install -g nodemon
+# -------------------- Vérification Nodemon --------------------
+if ! command -v nodemon &>/dev/null; then
+    log "⚡ nodemon non trouvé, installation globale..."
+    npm install -g nodemon
 fi
 
-# --- 4️⃣ Installer l'environnement Python pour TTS ---
-if [ ! -d "./tts-env" ]; then
-  echo "🐍 Création de l'environnement Python TTS..."
-  python3 -m venv tts-env
+# -------------------- Setup Python TTS --------------------
+PYTHON_ENV="./tts-env"
+if [ ! -d "$PYTHON_ENV" ]; then
+    log "🐍 Création de l'environnement Python TTS..."
+    python3 -m venv "$PYTHON_ENV"
 fi
 
-echo "🔄 Activation de l'environnement Python et installation des packages TTS..."
-source ./tts-env/bin/activate
-pip install --upgrade pip setuptools wheel >/dev/null
-pip install -r requirements.txt >/dev/null
-deactivate
+log "🔄 Activation de l'environnement Python..."
+source "$PYTHON_ENV/bin/activate"
+pip install --upgrade pip setuptools wheel
+pip install -r requirements.txt || log "⚠️ Certaines dépendances Python ont échoué. Vérifie requirements.txt"
 
-# --- 5️⃣ Lancer le serveur Node.js en foreground ---
-PORT="${PORT:-3000}"
-echo "🔗 Lancement du serveur Node.js sur le port $PORT..."
-exec node index.js
+# -------------------- Check variables d'environnement --------------------
+[ -z "${PORT:-}" ] && export PORT=3000
+log "🔗 Serveur configuré pour le port $PORT"
+[ -z "${GROQ_API_KEY:-}" ] && log "⚠️ GROQ_API_KEY non défini dans .env"
+[ -z "${PLAYAI_TTS_KEY:-}" ] && log "⚠️ PLAYAI_TTS_KEY non défini dans .env"
+
+# -------------------- Monitoring et logs --------------------
+LOG_DIR="./logs"
+mkdir -p "$LOG_DIR"
+LOG_FILE="$LOG_DIR/server_$(date '+%Y%m%d_%H%M%S').log"
+log "📄 Logs vers : $LOG_FILE"
+
+# -------------------- Auto-restart (top 0,1%) --------------------
+restart_server() {
+    while true; do
+        log "🔄 Lancement serveur Node.js..."
+        node index.js >> "$LOG_FILE" 2>&1
+        log "⚠️ Serveur arrêté. Redémarrage automatique dans 3s..."
+        sleep 3
+    done
+}
+
+# -------------------- Final startup --------------------
+restart_server
