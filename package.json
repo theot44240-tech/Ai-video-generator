@@ -1,13 +1,14 @@
 {
   "name": "ai-shorts-generator",
-  "version": "2.1.0",
-  "description": "Générateur automatisé de shorts vidéo, TTS et AI ultra-stable.",
+  "version": "2.2.0",
+  "description": "Générateur automatisé de shorts vidéo avec TTS AI, ultra-stable pour Node.js et Python.",
   "main": "index.js",
   "scripts": {
     "start": "bash ./start-server.sh",
     "dev": "nodemon index.js",
     "lint": "eslint . --ext .js",
-    "test": "jest"
+    "test": "jest",
+    "install-python-deps": "python3 -m pip install --upgrade pip setuptools wheel && pip install -r requirements.txt"
   },
   "engines": {
     "node": ">=25.0.0"
@@ -26,7 +27,8 @@
     "node-fetch": "^3.3.2",
     "openai": "^4.30.0",
     "play-dl": "^1.5.9",
-    "sharp": "^0.32.4"
+    "sharp": "^0.32.4",
+    "python-shell": "^3.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.2",
@@ -43,6 +45,8 @@
     "shorts",
     "TTS",
     "generator",
+    "python",
+    "node",
     "render"
   ],
   "author": "Théo",
