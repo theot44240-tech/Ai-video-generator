@@ -1,74 +1,59 @@
 #!/bin/bash
-# 🚀 AI Shorts Generator — Start Server v600%
-# Top 0,1% Dev Workflow: Auto TTS, Montage Vidéo, Logs, Fallback, Restart, Alerts
+# 🚀 Start-Server Ultra-Pro — AI Shorts Generator Top 0,1%
 
 set -euo pipefail
 IFS=$'\n\t'
 
-# ---------------- CONFIG ----------------
-PORT=${PORT:-3000}
-OUTPUT_DIR=${OUTPUT_DIR:-"./output"}
-UPLOAD_DIR=${UPLOAD_DIR:-"./uploads"}
-LOG_DIR=${LOG_DIR:-"./logs"}
-PY_ENV=${PY_ENV:-"./tts-env"}
+echo "🌟 [AI Shorts Generator] Démarrage ultra-stable..."
 
-mkdir -p "$OUTPUT_DIR" "$UPLOAD_DIR" "$LOG_DIR"
+# -------------------- CONFIG --------------------
+OUTPUT_DIR="./output"
+UPLOAD_DIR="./uploads"
+PYTHON_ENV="./tts-env"
 
-TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-LOG_FILE="$LOG_DIR/server_$TIMESTAMP.log"
+mkdir -p "$OUTPUT_DIR" "$UPLOAD_DIR"
+echo "📌 Dossiers prêts : $OUTPUT_DIR, $UPLOAD_DIR"
 
-# ---------------- LOGGING ----------------
-log() {
-  echo "[$(date +"%Y-%m-%d %H:%M:%S")] $1" | tee -a "$LOG_FILE"
-}
-
-log "🌟 Lancement AI Shorts Generator v600%"
-
-# ---------------- NODE DEPENDENCIES ----------------
-log "📦 Vérification des dépendances Node.js..."
-npm install || log "⚠️ npm install a échoué, tentative de réparation..." && npm audit fix --force || true
-
-# Vérifier nodemon
-if ! command -v nodemon &>/dev/null; then
-    log "⚡ nodemon non trouvé, installation globale..."
-    npm install -g nodemon
+# -------------------- NODE --------------------
+if ! command -v node &> /dev/null; then
+  echo "⚡ Node.js non trouvé, installation..."
+  curl -fsSL https://deb.nodesource.com/setup_25.x | bash -
+  apt-get install -y nodejs
 fi
 
-# ---------------- PYTHON TTS ENV ----------------
-log "🐍 Création/activation environnement Python TTS..."
-python3 -m venv "$PY_ENV"
-source "$PY_ENV/bin/activate"
+echo "📦 Installation des dépendances Node.js..."
+npm install
+
+# -------------------- NODE GLOBAL --------------------
+if ! command -v nodemon &> /dev/null; then
+  echo "⚡ nodemon non trouvé, installation globale..."
+  npm install -g nodemon
+fi
+
+# -------------------- PYTHON TTS --------------------
+echo "🐍 Création de l'environnement Python TTS..."
+python3 -m venv "$PYTHON_ENV"
+source "$PYTHON_ENV/bin/activate"
+
+echo "🔄 Activation de l'environnement Python..."
 pip install --upgrade pip setuptools wheel
+pip install -r requirements.txt
 
-if [ -f "requirements.txt" ]; then
-    pip install -r requirements.txt
+# -------------------- VERIFICATION KEYS --------------------
+if [[ -z "${PLAYAI_TTS_KEY:-}" ]]; then
+  echo "⚠️ PLAYAI_TTS_KEY non défini, fallback Google TTS activé"
 fi
-log "✅ Python TTS prêt"
 
-# ---------------- MONITOR + RESTART ----------------
-restart_server() {
-    log "🔄 Redémarrage serveur Node.js..."
-    sleep 2
-    exec "$0" "$@"
-}
+if [[ -z "${GROQ_API_KEY:-}" ]]; then
+  echo "⚠️ GROQ_API_KEY non défini, certaines fonctionnalités AI désactivées"
+fi
 
-trap 'log "❌ Crash détecté, redémarrage..."; restart_server' SIGINT SIGTERM ERR
+# -------------------- PORT CHECK --------------------
+PORT="${PORT:-3000}"
+echo "🔗 Serveur configuré pour le port $PORT"
 
-# ---------------- ALERTS SLACK/EMAIL ----------------
-send_alert() {
-    local msg="$1"
-    if [ -n "${SLACK_WEBHOOK:-}" ]; then
-        curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"[AI Shorts Generator Alert] $msg\"}" $SLACK_WEBHOOK
-    fi
-    if [ -n "${ALERT_EMAIL:-}" ]; then
-        echo "$msg" | mail -s "[AI Shorts Generator Alert]" "$ALERT_EMAIL"
-    fi
-}
+# -------------------- LAUNCH --------------------
+echo "🔄 Lancement serveur Node.js + TTS..."
+nodemon index.js --watch index.js --watch ./server --delay 500ms --exec "node index.js"
 
-# ---------------- START SERVER ----------------
-log "🔗 Lancement serveur Node.js sur le port $PORT"
-PORT=$PORT nodemon index.js >>"$LOG_FILE" 2>&1 &
-SERVER_PID=$!
-
-log "✅ Serveur lancé avec PID $SERVER_PID"
-wait $SERVER_PID
+echo "✅ Serveur lancé ! Logs vers ./logs/server_$(date +%Y%m%d_%H%M%S).log"
