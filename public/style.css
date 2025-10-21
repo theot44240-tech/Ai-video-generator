@@ -1,60 +1,265 @@
-body {
-  font-family: Arial, sans-serif;
-  background: #f4f4f9;
+/* ------------------------------
+   🌌 GLOBAL STYLES
+------------------------------ */
+:root {
+  --primary: #6c63ff;
+  --primary-dark: #5149db;
+  --accent: #00d4ff;
+  --bg: #0d0d0f;
+  --card-bg: #1a1a1d;
+  --text: #f2f2f2;
+  --text-secondary: #b8b8b8;
+  --radius: 16px;
+  --transition: 0.25s ease;
+}
+
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  font-family: 'Inter', sans-serif;
 }
 
-.container {
-  max-width: 600px;
-  margin: 50px auto;
+body {
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow-x: hidden;
   padding: 20px;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-h1 {
+/* ------------------------------
+   🌟 CONTAINER
+------------------------------ */
+.app-container {
+  width: 100%;
+  max-width: 720px;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 2rem;
+  box-shadow: 0 0 20px rgba(108, 99, 255, 0.1);
+  animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ------------------------------
+   🧠 HEADER
+------------------------------ */
+header {
   text-align: center;
-  color: #333;
+  margin-bottom: 2rem;
 }
 
-input[type="text"] {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 16px;
+header h1 {
+  font-size: 2rem;
+  color: var(--accent);
+  letter-spacing: 0.5px;
 }
 
-button {
-  display: block;
+header .subtitle {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+
+/* ------------------------------
+   ✍️ FORM SECTION
+------------------------------ */
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.label {
+  font-weight: 600;
+  color: var(--text);
+}
+
+textarea {
   width: 100%;
-  padding: 10px;
-  background: #ff4b2b;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
+  padding: 1rem;
+  background: #111;
+  color: var(--text);
+  border: 1px solid #333;
+  border-radius: var(--radius);
+  resize: none;
+  outline: none;
+  transition: var(--transition);
+}
+
+textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 6px rgba(108, 99, 255, 0.5);
+}
+
+/* ------------------------------
+   ⚙️ OPTIONS
+------------------------------ */
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.options label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.options select {
+  padding: 0.6rem 1rem;
+  background: #111;
+  color: var(--text);
+  border: 1px solid #333;
+  border-radius: var(--radius);
   cursor: pointer;
-  transition: background 0.3s;
+  transition: var(--transition);
 }
 
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.options select:hover {
+  border-color: var(--primary);
 }
 
-button:hover:not(:disabled) {
-  background: #ff416c;
+/* ------------------------------
+   🔘 BUTTONS
+------------------------------ */
+button {
+  cursor: pointer;
+  border: none;
+  transition: var(--transition);
+  border-radius: var(--radius);
+  padding: 0.9rem 1.2rem;
+  font-weight: 600;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
-pre {
-  background: #f0f0f0;
-  padding: 10px;
-  border-radius: 6px;
-  margin-top: 15px;
-  white-space: pre-wrap;
-  word-wrap: break-word;
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(108, 99, 255, 0.4);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, var(--accent), var(--primary-dark));
+}
+
+.btn-secondary {
+  background: #222;
+  color: var(--text);
+}
+
+.btn-secondary:hover {
+  background: #333;
+}
+
+.btn-tertiary {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.btn-tertiary:hover {
+  background: var(--accent);
+  color: #111;
+}
+
+/* ------------------------------
+   ⏳ PROGRESS SECTION
+------------------------------ */
+#progressSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.loader {
+  border: 4px solid #222;
+  border-top: 4px solid var(--accent);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+#progressText {
+  margin-top: 1rem;
+  color: var(--text-secondary);
+}
+
+/* ------------------------------
+   🎥 RESULT SECTION
+------------------------------ */
+#resultSection {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+#resultSection h2 {
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+
+#generatedVideo {
+  width: 100%;
+  max-height: 380px;
+  border-radius: var(--radius);
+  background: #000;
+  margin-bottom: 1rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* ------------------------------
+   ⚡ FOOTER
+------------------------------ */
+footer {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* ------------------------------
+   🧩 UTILITIES
+------------------------------ */
+.hidden {
+  display: none !important;
+}
+
+@media (max-width: 600px) {
+  .app-container {
+    padding: 1.4rem;
+  }
+
+  header h1 {
+    font-size: 1.7rem;
+  }
+
+  button {
+    font-size: 0.95rem;
+  }
 }
