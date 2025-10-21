@@ -3,94 +3,154 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="AI Shorts Generator – Crée automatiquement des vidéos YouTube Shorts avec l’IA. 🚀" />
-  <meta name="theme-color" content="#0d0d0d" />
-  <title>AI Shorts Generator 🚀</title>
-
-  <!-- Favicon -->
-  <link rel="icon" href="/favicon.ico" />
-
-  <!-- Fonts & Icons -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
-  <!-- CSS -->
-  <link rel="stylesheet" href="style.css" />
-
-  <!-- Preload performance -->
-  <link rel="preload" href="/script.js" as="script" />
+  <title>🎬 AI Shorts Generator</title>
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/847/847969.png" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #111, #1f1f1f);
+      color: white;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 25px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+    }
+    textarea, select, input {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      margin-top: 8px;
+      margin-bottom: 15px;
+      font-size: 1rem;
+    }
+    button {
+      background: linear-gradient(90deg, #ff0055, #ff8800);
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 1rem;
+      border-radius: 12px;
+      cursor: pointer;
+      width: 100%;
+      transition: 0.3s;
+    }
+    button:hover {
+      opacity: 0.85;
+      transform: scale(1.03);
+    }
+    .loader {
+      display: none;
+      margin-top: 15px;
+      text-align: center;
+    }
+    .loader span {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: white;
+      border-radius: 50%;
+      margin: 0 3px;
+      animation: bounce 0.6s infinite alternate;
+    }
+    .loader span:nth-child(2) { animation-delay: 0.2s; }
+    .loader span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      to { transform: translateY(-6px); opacity: 0.6; }
+    }
+    video {
+      width: 100%;
+      border-radius: 12px;
+      margin-top: 15px;
+    }
+    footer {
+      margin-top: 20px;
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+  </style>
 </head>
-
 <body>
-  <div class="app-container">
-    <header class="header">
-      <h1>🎬 AI Shorts Generator</h1>
-      <p class="subtitle">Crée des vidéos YouTube Shorts automatiquement grâce à l’intelligence artificielle 🤖</p>
-    </header>
+  <h1>🎬 AI Shorts Generator</h1>
+  <div class="container">
+    <label>💡 Entre ton idée de short :</label>
+    <textarea id="idea" placeholder="Ex: La motivation à ne jamais abandonner."></textarea>
 
-    <main>
-      <!-- 🧠 FORMULAIRE -->
-      <section class="form-section">
-        <label for="prompt" class="label">💡 Ton idée de Short :</label>
-        <textarea id="prompt" placeholder="Ex : Pourquoi il ne faut jamais abandonner..." rows="4"></textarea>
+    <label>🎤 Voix :</label>
+    <select id="voice">
+      <option value="fr">Français (Homme)</option>
+      <option value="en">Anglais</option>
+      <option value="es">Espagnol</option>
+    </select>
 
-        <div class="form-options">
-          <div class="option">
-            <label for="voice">🎤 Voix :</label>
-            <select id="voice">
-              <option value="fr-male" selected>Français (Homme)</option>
-              <option value="fr-female">Français (Femme)</option>
-              <option value="en-male">English (Male)</option>
-              <option value="en-female">English (Female)</option>
-              <option value="es-female">Español (Femme)</option>
-            </select>
-          </div>
+    <label>⏱ Durée cible (secondes) :</label>
+    <input id="duration" type="number" min="10" max="90" value="20" />
 
-          <div class="option">
-            <label for="duration">⏱ Durée cible :</label>
-            <select id="duration">
-              <option value="20">20s</option>
-              <option value="30" selected>30s</option>
-              <option value="45">45s</option>
-              <option value="60">60s</option>
-              <option value="70">70s</option>
-            </select>
-          </div>
-        </div>
-
-        <button id="generateBtn" class="btn-primary">
-          <i class="fas fa-bolt"></i> Générer le Short
-        </button>
-      </section>
-
-      <!-- ⚙️ PROGRESSION -->
-      <section id="progressSection" class="hidden">
-        <div class="loader"></div>
-        <p id="progressText">Génération du short en cours...</p>
-      </section>
-
-      <!-- 🎥 RÉSULTAT -->
-      <section id="resultSection" class="hidden">
-        <h2>✨ Ton Short est prêt :</h2>
-        <video id="generatedVideo" controls playsinline></video>
-
-        <div class="actions">
-          <button id="downloadBtn" class="btn-secondary">
-            <i class="fas fa-download"></i> Télécharger
-          </button>
-          <button id="retryBtn" class="btn-tertiary">
-            <i class="fas fa-redo"></i> Recommencer
-          </button>
-        </div>
-      </section>
-    </main>
-
-    <footer>
-      <p>⚡ Fait avec ❤️ et IA – Optimisé pour Render & Node.js</p>
-    </footer>
+    <button id="generateBtn">🚀 Générer le Short</button>
+    <div class="loader" id="loader">
+      <span></span><span></span><span></span>
+      <p>Création en cours... ⏳</p>
+    </div>
+    <video id="resultVideo" controls style="display:none;"></video>
   </div>
 
-  <!-- JS -->
-  <script src="script.js" defer></script>
+  <footer>⚡ Fait avec ❤️ par l’IA – Optimisé pour Render & Node.js</footer>
+
+  <script>
+    const generateBtn = document.getElementById("generateBtn");
+    const loader = document.getElementById("loader");
+    const video = document.getElementById("resultVideo");
+
+    generateBtn.addEventListener("click", async () => {
+      const idea = document.getElementById("idea").value.trim();
+      const voice = document.getElementById("voice").value;
+      const duration = document.getElementById("duration").value;
+
+      if (!idea) {
+        alert("Merci d'entrer une idée avant de générer !");
+        return;
+      }
+
+      loader.style.display = "block";
+      video.style.display = "none";
+
+      try {
+        const res = await fetch("/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idea, voice, duration })
+        });
+
+        if (!res.ok) throw new Error("Erreur serveur");
+
+        const data = await res.json();
+        if (data.videoUrl) {
+          video.src = data.videoUrl;
+          video.style.display = "block";
+        } else {
+          alert("Aucune vidéo générée !");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Erreur lors de la génération. Vérifie Render logs !");
+      } finally {
+        loader.style.display = "none";
+      }
+    });
+  </script>
 </body>
 </html>
