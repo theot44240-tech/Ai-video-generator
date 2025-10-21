@@ -1,23 +1,24 @@
-/* ------------------------------
-   🌌 GLOBAL STYLES
------------------------------- */
+/* ==========================================================
+   🎨 AI SHORTS GENERATOR – STYLE GLOBAL
+   Author: TheoT44240-Tech
+   Optimisation: Top 0.1%
+   ========================================================== */
+
 :root {
-  --primary: #6c63ff;
-  --primary-dark: #5149db;
-  --accent: #00d4ff;
-  --bg: #0d0d0f;
-  --card-bg: #1a1a1d;
-  --text: #f2f2f2;
-  --text-secondary: #b8b8b8;
-  --radius: 16px;
+  --primary: #7c3aed;
+  --secondary: #06b6d4;
+  --bg: #0d0d0d;
+  --text: #f5f5f5;
+  --accent: #111111;
+  --radius: 12px;
   --transition: 0.25s ease;
 }
 
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Inter', sans-serif;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
 }
 
 body {
@@ -27,239 +28,243 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  overflow-x: hidden;
   padding: 20px;
 }
 
-/* ------------------------------
-   🌟 CONTAINER
------------------------------- */
+/* ==========================================================
+   🧱 CONTAINER
+========================================================== */
 .app-container {
   width: 100%;
   max-width: 720px;
-  background: var(--card-bg);
+  background: var(--accent);
+  padding: 30px 25px 50px;
   border-radius: var(--radius);
-  padding: 2rem;
-  box-shadow: 0 0 20px rgba(108, 99, 255, 0.1);
-  animation: fadeIn 0.8s ease;
+  box-shadow: 0 0 30px rgba(124, 58, 237, 0.25);
+  animation: fadeIn 0.7s ease forwards;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ------------------------------
-   🧠 HEADER
------------------------------- */
 header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 30px;
 }
 
 header h1 {
-  font-size: 2rem;
-  color: var(--accent);
-  letter-spacing: 0.5px;
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--primary);
 }
 
-header .subtitle {
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  margin-top: 0.5rem;
+.subtitle {
+  font-size: 1rem;
+  color: #bbb;
+  margin-top: 8px;
 }
 
-/* ------------------------------
-   ✍️ FORM SECTION
------------------------------- */
+/* ==========================================================
+   📋 FORMULAIRE
+========================================================== */
 .form-section {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 18px;
 }
 
 .label {
   font-weight: 600;
-  color: var(--text);
+  color: var(--secondary);
 }
 
 textarea {
   width: 100%;
-  padding: 1rem;
-  background: #111;
-  color: var(--text);
-  border: 1px solid #333;
-  border-radius: var(--radius);
   resize: none;
+  border: 2px solid #333;
+  border-radius: var(--radius);
+  background: #1a1a1a;
+  color: var(--text);
+  font-size: 1rem;
+  padding: 10px 14px;
   outline: none;
   transition: var(--transition);
 }
 
 textarea:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 6px rgba(108, 99, 255, 0.5);
+  background: #151515;
 }
 
-/* ------------------------------
+/* ==========================================================
    ⚙️ OPTIONS
------------------------------- */
-.options {
+========================================================== */
+.form-options {
   display: flex;
   flex-wrap: wrap;
+  gap: 15px;
   justify-content: space-between;
-  gap: 0.8rem;
 }
 
-.options label {
-  font-weight: 500;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
+.option {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 150px;
 }
 
-.options select {
-  padding: 0.6rem 1rem;
-  background: #111;
+select {
+  background: #1a1a1a;
   color: var(--text);
-  border: 1px solid #333;
+  border: 2px solid #333;
   border-radius: var(--radius);
-  cursor: pointer;
+  padding: 8px 10px;
+  font-size: 0.95rem;
   transition: var(--transition);
 }
 
-.options select:hover {
+select:focus {
   border-color: var(--primary);
 }
 
-/* ------------------------------
-   🔘 BUTTONS
------------------------------- */
+/* ==========================================================
+   🔘 BOUTONS
+========================================================== */
 button {
   cursor: pointer;
-  border: none;
   transition: var(--transition);
+  border: none;
   border-radius: var(--radius);
-  padding: 0.9rem 1.2rem;
   font-weight: 600;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(108, 99, 255, 0.4);
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+  margin-top: 10px;
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  background: linear-gradient(135deg, var(--accent), var(--primary-dark));
+  opacity: 0.9;
+  transform: scale(1.01);
+}
+
+.btn-secondary,
+.btn-tertiary {
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  font-size: 0.95rem;
 }
 
 .btn-secondary {
-  background: #222;
-  color: var(--text);
-}
-
-.btn-secondary:hover {
-  background: #333;
+  background: var(--primary);
+  color: white;
 }
 
 .btn-tertiary {
-  background: transparent;
-  color: var(--accent);
-  border: 1px solid var(--accent);
+  background: #222;
+  color: #ccc;
 }
 
+.btn-secondary:hover,
 .btn-tertiary:hover {
-  background: var(--accent);
-  color: #111;
+  transform: scale(1.03);
 }
 
-/* ------------------------------
-   ⏳ PROGRESS SECTION
------------------------------- */
+/* ==========================================================
+   ⏳ PROGRESSION
+========================================================== */
+.hidden {
+  display: none !important;
+}
+
 #progressSection {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 2rem;
+  text-align: center;
+  margin-top: 30px;
 }
 
 .loader {
-  border: 4px solid #222;
-  border-top: 4px solid var(--accent);
+  width: 50px;
+  height: 50px;
+  border: 5px solid #333;
+  border-top-color: var(--primary);
   border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  animation: spin 0.9s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
+  margin: 0 auto 15px;
+  animation: spin 1s linear infinite;
 }
 
 #progressText {
-  margin-top: 1rem;
-  color: var(--text-secondary);
+  color: #ccc;
+  font-size: 1rem;
 }
 
-/* ------------------------------
-   🎥 RESULT SECTION
------------------------------- */
+/* ==========================================================
+   🎬 RÉSULTAT
+========================================================== */
 #resultSection {
-  margin-top: 2rem;
+  margin-top: 40px;
   text-align: center;
-}
-
-#resultSection h2 {
-  color: var(--accent);
-  margin-bottom: 1rem;
 }
 
 #generatedVideo {
   width: 100%;
-  max-height: 380px;
+  max-height: 400px;
   border-radius: var(--radius);
+  margin: 15px 0;
   background: #000;
-  margin-bottom: 1rem;
 }
 
 .actions {
   display: flex;
   justify-content: center;
-  gap: 1rem;
+  gap: 15px;
+  flex-wrap: wrap;
 }
 
-/* ------------------------------
+/* ==========================================================
    ⚡ FOOTER
------------------------------- */
+========================================================== */
 footer {
-  margin-top: 2rem;
+  margin-top: 40px;
   text-align: center;
-  font-size: 0.85rem;
-  color: var(--text-secondary);
+  font-size: 0.9rem;
+  color: #666;
 }
 
-/* ------------------------------
-   🧩 UTILITIES
------------------------------- */
-.hidden {
-  display: none !important;
+/* ==========================================================
+   ✨ ANIMATIONS
+========================================================== */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================
+   📱 RESPONSIVE
+========================================================== */
 @media (max-width: 600px) {
   .app-container {
-    padding: 1.4rem;
+    padding: 20px;
   }
 
   header h1 {
-    font-size: 1.7rem;
+    font-size: 1.5rem;
   }
 
-  button {
-    font-size: 0.95rem;
+  .btn-primary {
+    font-size: 1rem;
   }
 }
