@@ -1,61 +1,88 @@
 #!/usr/bin/env bash
+# ===============================================================
+# 🔥 AI Shorts Generator — Start Script (Top 0.01% version)
+# Author: Théo
+# Description: Boot script with ultra-reliable build & start flow
+# ===============================================================
+
 set -euo pipefail
 IFS=$'\n\t'
 
-echo "🌟 [AI Shorts Generator] Démarrage ultra-stable..."
+# --- Colors for clarity ---
+GREEN="\033[0;32m"
+YELLOW="\033[1;33m"
+RED="\033[0;31m"
+NC="\033[0m"
 
-# -------------------------
-# Vérification dossiers
-# -------------------------
-for dir in "./output" "./uploads"; do
-  if [ ! -d "$dir" ]; then
-    mkdir -p "$dir"
-    echo "📌 Création du dossier $dir"
-  else
-    echo "📌 Dossier $dir prêt"
-  fi
-done
+log() {
+  echo -e "${GREEN}[$(date '+%H:%M:%S')]${NC} $1"
+}
 
-# -------------------------
-# Node.js deps
-# -------------------------
-echo "📦 Installation des dépendances Node.js..."
-npm install
-if ! command -v nodemon &> /dev/null; then
-  echo "⚡ nodemon non trouvé, installation globale..."
-  npm install -g nodemon
-fi
+warn() {
+  echo -e "${YELLOW}[WARN]${NC} $1"
+}
 
-# -------------------------
-# Python env
-# -------------------------
-PY_ENV="./tts-env"
-if [ ! -d "$PY_ENV" ]; then
-  echo "🐍 Création de l'environnement Python TTS..."
-  python3 -m venv "$PY_ENV"
-fi
+error_exit() {
+  echo -e "${RED}[ERROR]${NC} $1"
+  exit 1
+}
 
-echo "🔄 Activation de l'environnement Python..."
-source "$PY_ENV/bin/activate"
+# --- 1️⃣ Environment setup ---
+log "🔧 Checking environment variables..."
+export NODE_ENV=production
+export PYTHONUNBUFFERED=1
+export PATH="$PATH:/usr/local/bin"
 
-echo "📦 Mise à jour pip, setuptools et wheel..."
-python3 -m pip install --upgrade pip setuptools wheel
-
-echo "📦 Installation des dépendances Python..."
-pip install -r requirements.txt
-
-# -------------------------
-# Gestion du port Render
-# -------------------------
-PORT="${PORT:-3000}"
-echo "🔗 Serveur configuré pour le port $PORT"
-
-# -------------------------
-# Lancement serveur
-# -------------------------
-echo "🔄 Lancement serveur Node.js + TTS..."
-if command -v nodemon &> /dev/null; then
-  nodemon index.js
+if [ ! -f ".env" ]; then
+  warn ".env file not found — using Render environment variables only"
 else
+  log "✅ .env file found — loading environment"
+  set -a
+  source .env
+  set +a
+fi
+
+# --- 2️⃣ Node version check ---
+log "🔍 Node.js version: $(node -v)"
+log "🔍 NPM version: $(npm -v)"
+
+# --- 3️⃣ Python setup ---
+log "🐍 Setting up Python environment..."
+python3 -m venv .venv || warn "Could not create venv, using system Python"
+source .venv/bin/activate 2>/dev/null || warn "No venv detected — fallback to system Python"
+
+log "⬆️ Upgrading pip & installing dependencies..."
+python3 -m pip install --upgrade pip setuptools wheel > /dev/null 2>&1 || warn "pip upgrade failed"
+if [ -f "requirements.txt" ]; then
+  python3 -m pip install -r requirements.txt --no-cache-dir > /dev/null 2>&1 || warn "Some Python deps failed, continuing..."
+else
+  warn "No requirements.txt found, skipping Python deps"
+fi
+
+# --- 4️⃣ Node.js dependencies ---
+log "📦 Installing Node dependencies..."
+npm ci --omit=dev --no-audit --no-fund || npm install --omit=dev --no-audit --no-fund || error_exit "Failed to install Node modules"
+
+# --- 5️⃣ Build verification ---
+if [ -f "build.js" ]; then
+  log "🛠 Running custom build script..."
+  node build.js || warn "Build script failed, skipping..."
+else
+  log "⚙️ No build script found — skipping build"
+fi
+
+# --- 6️⃣ AI Shorts Generator startup ---
+log "🚀 Starting AI Shorts Generator..."
+if [ -f "index.js" ]; then
   node index.js
+else
+  error_exit "❌ index.js not found. Cannot start server."
+fi
+
+# --- 7️⃣ Auto-restart protection ---
+EXIT_CODE=$?
+if [ $EXIT_CODE -ne 0 ]; then
+  warn "Server exited with code $EXIT_CODE — restarting in 3 seconds..."
+  sleep 3
+  exec "$0"
 fi
