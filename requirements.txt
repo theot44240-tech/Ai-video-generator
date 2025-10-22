@@ -1,44 +1,47 @@
 ##########################################
 # 🧩 CORE SYSTEM (AI Shorts Generator)
-# Optimisé pour Render - Node.js backend + Python AI engine
+# Optimisé Render CPU — Node backend + Python AI engine
 ##########################################
 
-# --- Journalisation et base système ---
-loguru==0.7.3                 # Logging professionnel (format coloré, clair)
-requests==2.31.0              # Requêtes HTTP fiables pour toutes les API
-python-dotenv==1.0.1          # Lecture des variables .env
+# --- Journalisation & base système ---
+loguru==0.7.3                 # Logging clair et coloré
+requests==2.31.0              # Requêtes HTTP fiables
+python-dotenv==1.0.1          # Lecture variables .env
 
 ##########################################
 # 🎙️ SPEECH / AUDIO (TTS + Whisper)
 ##########################################
-openai-whisper==20231117      # Transcription vocale (Whisper OpenAI)
-gTTS==2.5.3                   # Text-to-Speech Google (fallback rapide)
-pydub==0.25.1                 # Gestion des sons (découpage, mixage)
-soundfile==0.12.1             # Lecture/écriture audio haute qualité
-SpeechRecognition==3.10.4     # Optionnel : micro et voix live
-sounddevice==0.4.7            # Optionnel : lecture audio directe
+faster-whisper==20231117       # Transcription rapide CPU
+gTTS==2.5.3                    # TTS Google (fallback rapide)
+pydub==0.25.1                  # Découpage et mixage audio
+soundfile==0.12.1              # Lecture/écriture audio haute qualité
+# SpeechRecognition et sounddevice retirés pour gain de vitesse
+
+# ffmpeg-python optionnel si MoviePy avancé
+ffmpeg-python==1.2.1
 
 ##########################################
 # 🎥 VIDEO GENERATION (MoviePy + OpenCV)
 ##########################################
-moviepy==1.0.3                # Montage vidéo automatique (Shorts)
-opencv-python-headless==4.10.0.84 # Traitement image sans GUI (serveur)
-imageio==2.35.1               # Lecture/écriture image/vidéo
-imageio-ffmpeg==0.5.1         # Backend ffmpeg pour MoviePy
-Pillow==10.4.0                # Manipulation d’images (miniatures, texte)
-numpy==1.26.4                 # Base pour tous les calculs visuels
+moviepy==1.0.3                 # Montage vidéo automatique
+opencv-python-headless==4.10.0.84  # Traitement image sans GUI
+imageio==2.35.1                # Lecture/écriture image/vidéo
+imageio-ffmpeg==0.5.1          # Backend ffmpeg
+Pillow==10.4.0                 # Miniatures et texte
+numpy==1.26.4                  # Base pour calculs visuels
+scikit-image==0.21.0           # Optionnel : filtres et transformations image
 
 ##########################################
 # 🤖 IA & NLP (LLM / TTS / Optimization)
 ##########################################
-transformers==4.44.2          # Modèles de langage (LLM, text2text)
-sentencepiece==0.2.0          # Tokenizer universel pour modèles
-accelerate==1.1.0             # Optimisation CPU/GPU automatique
-torch==2.1.2                  # PyTorch compatible Render (CPU safe)
-numba==0.60.0                 # Accélération JIT (audio + traitement rapide)
-protobuf==5.27.3              # Format binaire pour modèles
+transformers>=4.44.2,<5        # LLM stable sur CPU
+sentencepiece==0.2.0           # Tokenizer universel
+accelerate==1.1.0              # Optimisation CPU automatique
+torch==2.1.2                   # PyTorch CPU safe pour Render
+numba==0.60.0                  # Accélération JIT audio + vidéo
+protobuf==5.27.3               # Format binaire modèles
 
 ##########################################
 # 🔧 UTILITAIRES
 ##########################################
-tqdm==4.66.5                  # Barres de progression stylées
+tqdm==4.66.5                   # Barres de progression
