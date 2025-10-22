@@ -1,7 +1,7 @@
 {
   "name": "ai-video-generator",
-  "version": "1.0.0",
-  "description": "AI Shorts Generator — générateur automatisé de vidéos courtes avec voix, texte et upload TikTok/YouTube",
+  "version": "1.0.1",
+  "description": "AI Shorts Generator — création automatisée de vidéos courtes avec Groq, Whisper et PlayHT API.",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -15,6 +15,7 @@
   "dependencies": {
     "@google-cloud/text-to-speech": "^5.3.0",
     "axios": "^1.7.4",
+    "chalk": "^5.3.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
@@ -23,16 +24,21 @@
     "form-data": "^4.0.0",
     "fs-extra": "^11.2.0",
     "groq-sdk": "^0.9.0",
+    "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "node-fetch": "^3.3.2",
     "openai": "^4.67.3",
+    "p-limit": "^5.0.0",
     "path": "^0.12.7",
-    "playht": "^1.7.2",
+    "playht-api": "^1.0.3",
     "sharp": "^0.33.4",
+    "uuid": "^9.0.1",
+    "winston": "^3.14.2",
     "whisper-timestamped": "^0.1.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.0"
+    "nodemon": "^3.1.0",
+    "eslint": "^9.11.1"
   },
   "keywords": [
     "AI",
@@ -41,9 +47,10 @@
     "shorts",
     "tiktok",
     "youtube",
-    "automation",
     "groq",
-    "openai"
+    "openai",
+    "whisper",
+    "tts"
   ],
   "author": "theot44240-tech",
   "license": "MIT"
