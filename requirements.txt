@@ -4,41 +4,44 @@
 ##########################################
 
 # --- Journalisation & base système ---
-loguru==0.7.3                 
-requests==2.31.0              
-python-dotenv==1.0.1          
+loguru==0.7.3                 # Logging clair et coloré
+requests==2.31.0              # Requêtes HTTP fiables
+python-dotenv==1.0.1          # Lecture variables .env
 
 ##########################################
 # 🎙️ SPEECH / AUDIO (TTS + Whisper)
 ##########################################
-faster-whisper==1.2.0         # Version stable PyPI pour CPU
-gTTS==2.5.3                   
-pydub==0.25.1                  
-soundfile==0.12.1              
-ffmpeg-python==1.2.1          
+faster-whisper==1.2.0          # Transcription rapide CPU
+gTTS==2.5.3                     # TTS Google (fallback rapide)
+pydub==0.25.1                   # Découpage et mixage audio
+soundfile==0.12.1               # Lecture/écriture audio haute qualité
+# SpeechRecognition et sounddevice retirés pour gain de vitesse
+
+# ffmpeg-python optionnel si MoviePy avancé
+ffmpeg-python>=0.1.17,<1
 
 ##########################################
 # 🎥 VIDEO GENERATION (MoviePy + OpenCV)
 ##########################################
-moviepy==1.0.3                 
-opencv-python-headless==4.10.0.84  
-imageio==2.35.1                
-imageio-ffmpeg==0.5.1         
-Pillow==10.4.0                 
-numpy==1.26.4                 
-scikit-image==0.21.0           
+moviepy==1.0.3                  # Montage vidéo automatique
+opencv-python-headless==4.10.0.84  # Traitement image sans GUI
+imageio==2.35.1                  # Lecture/écriture image/vidéo
+imageio-ffmpeg==0.5.1            # Backend ffmpeg
+Pillow==10.4.0                   # Miniatures et texte
+numpy==1.26.4                    # Base pour calculs visuels
+scikit-image==0.21.0             # Optionnel : filtres et transformations image
 
 ##########################################
 # 🤖 IA & NLP (LLM / TTS / Optimization)
 ##########################################
-transformers>=4.44.2,<5        
-sentencepiece==0.2.0           
-accelerate==1.1.0              
-torch==2.1.2                   
-numba==0.60.0                  
-protobuf==5.27.3               
+transformers>=4.44.2,<5          # LLM stable sur CPU
+sentencepiece==0.2.0             # Tokenizer universel
+accelerate==1.1.0                # Optimisation CPU automatique
+torch==2.1.2                     # PyTorch CPU safe pour Render
+numba==0.60.0                     # Accélération JIT audio + vidéo
+protobuf==5.27.3                 # Format binaire modèles
 
 ##########################################
 # 🔧 UTILITAIRES
 ##########################################
-tqdm==4.66.5
+tqdm==4.66.5                     # Barres de progression
