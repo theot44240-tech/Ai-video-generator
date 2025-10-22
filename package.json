@@ -27,7 +27,7 @@
     "node-fetch": "^3.3.2",
     "openai": "^4.67.3",
     "path": "^0.12.7",
-    "playht": "^2.1.0",
+    "playht": "^1.7.2",
     "sharp": "^0.33.4",
     "whisper-timestamped": "^0.1.1"
   },
