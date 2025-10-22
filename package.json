@@ -1,6 +1,6 @@
 {
   "name": "ai-video-generator",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "AI Shorts Generator — création automatisée de vidéos courtes avec Groq, Whisper et PlayHT API (via axios).",
   "type": "module",
   "main": "index.js",
@@ -34,8 +34,7 @@
     "path": "^0.12.7",
     "sharp": "^0.33.4",
     "uuid": "^9.0.1",
-    "winston": "^3.14.2",
-    "whisper-timestamped": "^0.1.1"
+    "winston": "^3.14.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.0",
