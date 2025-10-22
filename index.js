@@ -11,8 +11,8 @@ import { createVideo } from "./video.js"; // ton module pour assembler le short
 
 dotenv.config();
 const app = express();
-const PORT = process.env.PORT || 3000;
-
+const port = process.env.PORT || 3000; // Render fournit PORT
+app.listen(port, () => console.log(`⚡ Server running on port ${port}`));
 app.use(bodyParser.json());
 
 // === Page d'accueil ===
