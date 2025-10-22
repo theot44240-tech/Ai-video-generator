@@ -1,87 +1,115 @@
-// server.js — AI Shorts Generator Backend
+// server.js — AI Shorts Generator (PRODUCTION VERSION)
 import express from "express";
 import cors from "cors";
+import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import dotenv from "dotenv";
 
+// === MODULES INTERNES ===
+import { generateGroqResponse } from "./groq.js";
+import { generateTTS } from "./tts.js";
+import { createVideo } from "./video.js";
+
+// === CONFIG DE BASE ===
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-// Fix ESModule __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Middlewares
+// === MIDDLEWARES ===
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
-// === ROUTES PRINCIPALES ===
-
-// Check si le serveur tourne
+// === HEALTH CHECK ===
 app.get("/", (req, res) => {
-  res.send("🚀 AI Shorts Generator server is running successfully!");
+  res.send("🚀 AI Shorts Generator backend is running perfectly ✅");
 });
 
-// API GROQ (texte / prompt)
+// ======================================================
+// 🧠 GROQ: Génération de script (texte)
+// ======================================================
 app.post("/api/groq", async (req, res) => {
   try {
     const { prompt } = req.body;
     if (!prompt) return res.status(400).json({ error: "Missing prompt" });
 
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
-        messages: [{ role: "user", content: prompt }],
-      }),
-    });
+    console.log("🧠 GROQ prompt reçu:", prompt);
 
-    const data = await response.json();
-    res.json(data);
-  } catch (err) {
-    console.error("❌ Error in /api/groq:", err);
-    res.status(500).json({ error: err.message });
+    const groqResponse = await generateGroqResponse(prompt);
+    if (!groqResponse) throw new Error("GROQ failed to generate content");
+
+    res.json({ success: true, text: groqResponse });
+  } catch (error) {
+    console.error("❌ Erreur /api/groq:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-// API TTS (Google ou PlayHT)
+// ======================================================
+// 🔊 TTS: Génération de voix à partir du script
+// ======================================================
 app.post("/api/tts", async (req, res) => {
   try {
-    const { text } = req.body;
+    const { text, voice } = req.body;
     if (!text) return res.status(400).json({ error: "Missing text" });
 
-    // Simule le TTS (tu peux remplacer par ton vrai tts.js plus tard)
-    res.json({ audioUrl: "https://example.com/audio.mp3", status: "ok" });
-  } catch (err) {
-    console.error("❌ Error in /api/tts:", err);
-    res.status(500).json({ error: err.message });
+    console.log("🎤 TTS texte reçu:", text.slice(0, 60) + "...");
+
+    const audioUrl = await generateTTS(text, voice);
+    if (!audioUrl) throw new Error("TTS generation failed");
+
+    res.json({ success: true, audioUrl });
+  } catch (error) {
+    console.error("❌ Erreur /api/tts:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-// API VIDEO
+// ======================================================
+// 🎬 VIDEO: Création du short final (vidéo + son)
+// ======================================================
 app.post("/api/video", async (req, res) => {
   try {
-    const { script, audioUrl } = req.body;
-    if (!script || !audioUrl) return res.status(400).json({ error: "Missing script or audio" });
+    const { script, audioUrl, background, subtitles } = req.body;
 
-    // Simule la création vidéo (tu relieras ton vrai video.js ici)
-    res.json({ videoUrl: "https://example.com/video.mp4", status: "rendering" });
-  } catch (err) {
-    console.error("❌ Error in /api/video:", err);
-    res.status(500).json({ error: err.message });
+    if (!script || !audioUrl)
+      return res.status(400).json({ error: "Missing script or audio URL" });
+
+    console.log("🎬 Création de la vidéo en cours...");
+    const videoUrl = await createVideo(script, audioUrl, background, subtitles);
+
+    res.json({ success: true, videoUrl });
+  } catch (error) {
+    console.error("❌ Erreur /api/video:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-// === LANCEMENT DU SERVEUR ===
-app.listen(PORT, () => {
-  console.log(`✅ AI Shorts Generator server running on port ${PORT}`);
-  console.log("🌐 Environment loaded:", Object.keys(process.env));
+// ======================================================
+// 🧩 API STATUS CHECK
+// ======================================================
+app.get("/api/status", (req, res) => {
+  res.json({
+    status: "online",
+    node: process.version,
+    environment: process.env.NODE_ENV || "development",
+    uptime: process.uptime().toFixed(0) + "s",
+  });
+});
+
+// ======================================================
+// ⚙️ START SERVER
+// ======================================================
+app.listen(PORT, "0.0.0.0", () => {
+  console.log("==========================================");
+  console.log("✅ AI Shorts Generator Server launched");
+  console.log("🌍 Port:", PORT);
+  console.log("🧠 GROQ Model: llama-3.1-8b-instant");
+  console.log("🔊 TTS System: Play.ai → Google fallback");
+  console.log("🎬 Video Engine: ffmpeg + fluent-ffmpeg");
+  console.log("==========================================");
 });
