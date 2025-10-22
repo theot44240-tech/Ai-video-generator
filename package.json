@@ -1,7 +1,7 @@
 {
   "name": "ai-shorts-generator",
-  "version": "2.2.2",
-  "description": "AI Shorts Generator — full automated video creation with Groq + Whisper + PlayHT + TTS + Auto Upload to YouTube/TikTok.",
+  "version": "2.2.3",
+  "description": "AI Shorts Generator — automatic short video creation powered by Groq, Whisper, and PlayHT.",
   "type": "module",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "form-data": "^4.0.4",
-    "groq-sdk": "^1.19.0",
+    "groq-sdk": "^1.17.2",
     "morgan": "^1.10.0",
     "node-fetch": "^3.3.2",
     "p-limit": "^5.0.0",
