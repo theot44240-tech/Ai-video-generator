@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # ============================================================
-# ⚡ AI SHORTS GENERATOR — START SCRIPT (LEVEL 9999999999999)
+# ⚡ AI SHORTS GENERATOR — START SCRIPT (TOP 0.1%)
 # Features:
 #  - Node/npm checks & auto-install
-#  - Python venv + pip install
+#  - Python venv + pip install (safe)
 #  - PORT detection + readiness probe (Render-proof)
 #  - Log rotation + stdout/stderr streaming
 #  - Graceful shutdown + exponential backoff restarts
@@ -38,7 +38,7 @@ command_exists(){ command -v "$1" >/dev/null 2>&1; }
 
 rotate_logs_if_needed(){
   ensure_dir "$LOG_DIR"
-  LOG_FILE="$LOG_DIR/server.log"
+  local LOG_FILE="$LOG_DIR/server.log"
   [ -f "$LOG_FILE" ] || return
   local size
   size=$(stat -c%s "$LOG_FILE" 2>/dev/null || stat -f%z "$LOG_FILE" 2>/dev/null || echo 0)
@@ -63,7 +63,9 @@ wait_for_port(){
 # -------------------
 # PRECHECKS
 # -------------------
-log "🌟 Starting AI Shorts Generator"
+ensure_dir "$LOG_DIR"
+log "🌟 Starting AI Shorts Generator (TOP 0.1%)"
+
 command_exists node || { log "❌ Node not found"; exit 1; }
 command_exists npm || { log "❌ NPM not found"; exit 1; }
 log "✅ Node $(node -v), NPM $(npm -v) detected"
@@ -84,13 +86,18 @@ fi
 
 # Python venv
 if command_exists python3 || command_exists python; then
-  [ -d "$PY_VENV_DIR" ] || (python3 -m venv "$PY_VENV_DIR" || python -m venv "$PY_VENV_DIR")
-  source "$PY_VENV_DIR/bin/activate" || true
-  [ -f "$REQUIREMENTS" ] && { 
+  PYTHON_CMD=$(command -v python3 || command -v python)
+  if [ ! -d "$PY_VENV_DIR" ]; then
+    log "🐍 Creating Python venv in $PY_VENV_DIR"
+    $PYTHON_CMD -m venv "$PY_VENV_DIR" || log "⚠️ Failed to create venv"
+  fi
+  # shellcheck disable=SC1090
+  source "$PY_VENV_DIR/bin/activate" || log "⚠️ Failed to activate venv"
+  if [ -f "$REQUIREMENTS" ]; then
     log "⬆️ Installing Python requirements"
     pip install --upgrade pip setuptools wheel >/dev/null 2>&1 || true
     pip install -r "$REQUIREMENTS" || log "⚠️ pip install failed, continuing"
-  }
+  fi
 else
   log "ℹ️ Python not found, skipping venv"
 fi
@@ -99,7 +106,11 @@ fi
 # SERVER LOOP
 # -------------------
 restart_count=0
-graceful_shutdown(){ log "🛑 Shutdown signal received"; exit 0; }
+graceful_shutdown(){ 
+  log "🛑 Shutdown signal received"
+  [ -n "${pid:-}" ] && kill "$pid" || true
+  exit 0
+}
 trap graceful_shutdown SIGINT SIGTERM
 
 while true; do
