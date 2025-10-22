@@ -1,16 +1,18 @@
 {
   "name": "ai-video-generator",
-  "version": "1.0.1",
-  "description": "AI Shorts Generator — création automatisée de vidéos courtes avec Groq, Whisper et PlayHT API.",
-  "main": "index.js",
+  "version": "3.0.0",
+  "description": "AI Shorts Generator — création automatisée de vidéos courtes avec Groq, Whisper et PlayHT API (via axios).",
   "type": "module",
+  "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "bash ./start-server.sh",
     "dev": "nodemon index.js",
+    "build": "node build.js",
     "test": "echo \"No test specified\" && exit 0"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
   },
   "dependencies": {
     "@google-cloud/text-to-speech": "^5.3.0",
@@ -30,7 +32,6 @@
     "openai": "^4.67.3",
     "p-limit": "^5.0.0",
     "path": "^0.12.7",
-    "playht-api": "^1.0.3",
     "sharp": "^0.33.4",
     "uuid": "^9.0.1",
     "winston": "^3.14.2",
@@ -53,5 +54,9 @@
     "tts"
   ],
   "author": "theot44240-tech",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theot44240-tech/Ai-video-generator"
+  }
 }
