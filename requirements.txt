@@ -1,23 +1,44 @@
-loguru==0.7.3
-requests==2.31.0
-transformers==4.44.2
-torch==2.1.2          # ✅ stable et compatible whisper
-sentencepiece==0.2.0
-protobuf==5.27.3
-accelerate==1.1.0
-whisper==1.1.10
-gTTS==2.5.3
-pydub==0.25.1
-soundfile==0.12.1
-SpeechRecognition==3.10.4
-moviepy==1.0.3
-opencv-python-headless==4.10.0.84
-Pillow==10.4.0
-imageio==2.35.1
-imageio-ffmpeg==0.5.1
-python-dotenv==1.0.1
-tqdm==4.66.5
-numpy==1.26.4
-openai-whisper==20231117
-sounddevice==0.4.7
-numba==0.60.0
+##########################################
+# 🧩 CORE SYSTEM (AI Shorts Generator)
+# Optimisé pour Render - Node.js backend + Python AI engine
+##########################################
+
+# --- Journalisation et base système ---
+loguru==0.7.3                 # Logging professionnel (format coloré, clair)
+requests==2.31.0              # Requêtes HTTP fiables pour toutes les API
+python-dotenv==1.0.1          # Lecture des variables .env
+
+##########################################
+# 🎙️ SPEECH / AUDIO (TTS + Whisper)
+##########################################
+openai-whisper==20231117      # Transcription vocale (Whisper OpenAI)
+gTTS==2.5.3                   # Text-to-Speech Google (fallback rapide)
+pydub==0.25.1                 # Gestion des sons (découpage, mixage)
+soundfile==0.12.1             # Lecture/écriture audio haute qualité
+SpeechRecognition==3.10.4     # Optionnel : micro et voix live
+sounddevice==0.4.7            # Optionnel : lecture audio directe
+
+##########################################
+# 🎥 VIDEO GENERATION (MoviePy + OpenCV)
+##########################################
+moviepy==1.0.3                # Montage vidéo automatique (Shorts)
+opencv-python-headless==4.10.0.84 # Traitement image sans GUI (serveur)
+imageio==2.35.1               # Lecture/écriture image/vidéo
+imageio-ffmpeg==0.5.1         # Backend ffmpeg pour MoviePy
+Pillow==10.4.0                # Manipulation d’images (miniatures, texte)
+numpy==1.26.4                 # Base pour tous les calculs visuels
+
+##########################################
+# 🤖 IA & NLP (LLM / TTS / Optimization)
+##########################################
+transformers==4.44.2          # Modèles de langage (LLM, text2text)
+sentencepiece==0.2.0          # Tokenizer universel pour modèles
+accelerate==1.1.0             # Optimisation CPU/GPU automatique
+torch==2.1.2                  # PyTorch compatible Render (CPU safe)
+numba==0.60.0                 # Accélération JIT (audio + traitement rapide)
+protobuf==5.27.3              # Format binaire pour modèles
+
+##########################################
+# 🔧 UTILITAIRES
+##########################################
+tqdm==4.66.5                  # Barres de progression stylées
