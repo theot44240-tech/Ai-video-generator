@@ -38,7 +38,7 @@ services:
       mountPath: /mnt/data
       sizeGB: 2
     scaling:
-      minInstances: 1
+      minInstances: 
       maxInstances: 1
 # ============================================================
 # Notes :
