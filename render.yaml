@@ -1,8 +1,3 @@
-# ============================================================
-# 🌟 Render Blueprint — AI Shorts Generator (Free Starter)
-# Version: 1.0.1
-# ============================================================
-
 services:
   - type: web
     name: ai-video-generator
@@ -40,4 +35,3 @@ services:
       sizeGB: 2
     scaling:
       minInstances: 1
-      maxInstances: 1
