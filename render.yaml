@@ -40,8 +40,8 @@ services:
       mountPath: /mnt/data
       sizeGB: 2
     scaling:
-      minInstances: 0
-      maxInstances: 1   # obligatoire pour le gratuit
+      minInstances: 1
+      maxInstances: 1,1   # obligatoire pour le gratuit
 # ============================================================
 # Notes :
 # - 100% gratuit, pas besoin de carte bancaire
