@@ -1,0 +1,66 @@
+# ============================================================
+# 🌟 Render Blueprint — AI Shorts Generator
+# Version: 1.0.0 (Top 0.1% config)
+# ============================================================
+
+services:
+  - type: web
+    name: ai-video-generator
+    env: node
+    plan: starter
+    region: frankfurt
+
+    buildCommand: |
+      echo "🚀 [Render] Installing Node deps..."
+      npm install
+      echo "🐍 [Render] Installing Python deps..."
+      python3 -m venv tts-env
+      source tts-env/bin/activate
+      pip install --upgrade pip
+      pip install -r requirements.txt || echo "⚠️ Python deps partial fail (non-blocking)"
+      echo "✅ [Render] Build complete."
+
+    startCommand: |
+      echo "🌟 Launching AI Shorts Generator..."
+      bash ./start-server.sh
+
+    autoDeploy: true
+    branch: main
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: PYTHONPATH
+        value: ./tts-env/bin/python
+      - key: LOG_LEVEL
+        value: info
+      # Ajoute ici tes API keys dans le dashboard Render (pas dans le code)
+      # - key: GROQ_API_KEY
+      #   sync: false
+      # - key: OPENAI_API_KEY
+      #   sync: false
+      # - key: PLAYHT_API_KEY
+      #   sync: false
+
+    healthCheckPath: /
+    disk:
+      name: uploads
+      mountPath: /mnt/data
+      sizeGB: 2
+
+    scaling:
+      minInstances: 1
+      maxInstances: 1
+
+# ============================================================
+# Notes :
+# - Ce fichier déploie ton app Node (index.js / server.js)
+# - Crée un venv Python (pour Whisper, TTS, MoviePy)
+# - Utilise logs colorés Render-friendly
+# - Secrets = uniquement dans Dashboard Render
+# - Redéploiement auto à chaque push GitHub
+# ============================================================
