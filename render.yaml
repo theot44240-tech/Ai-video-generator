@@ -1,15 +1,13 @@
 # ============================================================
 # 🌟 Render Blueprint — AI Shorts Generator
-# Version: 1.0.0 (Top 0.1% config)
+# Version: 1.0.1 (Fix scaling)
 # ============================================================
-
 services:
   - type: web
     name: ai-video-generator
     env: node
     plan: starter
     region: frankfurt
-
     buildCommand: |
       echo "🚀 [Render] Installing Node deps..."
       npm install
@@ -19,14 +17,11 @@ services:
       pip install --upgrade pip
       pip install -r requirements.txt || echo "⚠️ Python deps partial fail (non-blocking)"
       echo "✅ [Render] Build complete."
-
     startCommand: |
       echo "🌟 Launching AI Shorts Generator..."
       bash ./start-server.sh
-
     autoDeploy: true
     branch: main
-
     envVars:
       - key: NODE_ENV
         value: production
@@ -38,29 +33,17 @@ services:
         value: ./tts-env/bin/python
       - key: LOG_LEVEL
         value: info
-      # Ajoute ici tes API keys dans le dashboard Render (pas dans le code)
-      # - key: GROQ_API_KEY
-      #   sync: false
-      # - key: OPENAI_API_KEY
-      #   sync: false
-      # - key: PLAYHT_API_KEY
-      #   sync: false
-
     healthCheckPath: /
     disk:
       name: uploads
       mountPath: /mnt/data
       sizeGB: 2
-
     scaling:
       minInstances: 1
-      maxInstances: 1
-
+      maxInstances: 2
+      targetCPUPercent: 70
 # ============================================================
 # Notes :
-# - Ce fichier déploie ton app Node (index.js / server.js)
-# - Crée un venv Python (pour Whisper, TTS, MoviePy)
-# - Utilise logs colorés Render-friendly
-# - Secrets = uniquement dans Dashboard Render
-# - Redéploiement auto à chaque push GitHub
+# - Fix scaling Render (min < max + CPU target)
+# - Safe pour Render Starter plan
 # ============================================================
