@@ -6,7 +6,7 @@ services:
   - type: web
     name: ai-video-generator
     env: node
-    plan: starter       # Gratuit
+    plan: starter   # Gratuit
     region: frankfurt
     buildCommand: |
       echo "🚀 Installing Node deps..."
@@ -39,11 +39,11 @@ services:
       sizeGB: 2
     scaling:
       minInstances: 1
-      maxInstances: 2       # doit être > minInstances pour passer la validation
-      targetCPUPercent: 50  # nécessaire pour la validation
+      maxInstances: 1
 # ============================================================
 # Notes :
-# - Gratuit, pas besoin de carte bancaire
-# - Auto déploiement à chaque push sur main
-# - Secrets (API keys) à ajouter uniquement via le dashboard Render
+# - Starter gratuit → 1 instance max, CPU only, pas de GPU.
+# - Garder les modèles légers pour éviter les crashs.
+# - Auto déploiement à chaque push sur main.
+# - API keys à ajouter uniquement via le dashboard Render.
 # ============================================================
