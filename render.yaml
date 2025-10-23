@@ -40,7 +40,7 @@ services:
       mountPath: /mnt/data
       sizeGB: 2
     scaling:
-      minInstances: 1
+      minInstances: 0
       maxInstances: 1   # obligatoire pour le gratuit
 # ============================================================
 # Notes :
