@@ -41,7 +41,7 @@ services:
       sizeGB: 2
     scaling:
       minInstances: 1
-      maxInstances: 1,1   # obligatoire pour le gratuit
+      maxInstances: 2   # obligatoire pour le gratuit
 # ============================================================
 # Notes :
 # - 100% gratuit, pas besoin de carte bancaire
