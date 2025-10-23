@@ -1,21 +1,21 @@
 # ============================================================
-# 🌟 Render Blueprint — AI Shorts Generator (Starter Gratuit)
-# Version: 1.0.0
+# 🌟 Render Blueprint — AI Shorts Generator (Production)
+# Version: 1.0.0 (Top 0,1%)
 # ============================================================
 services:
   - type: web
     name: ai-video-generator
     env: node
-    plan: starter   # Gratuit
+    plan: standard   # Plan payant, permet GPU / scaling
     region: frankfurt
     buildCommand: |
       echo "🚀 [Render] Installing Node deps..."
-      npm install
-      echo "🐍 [Render] Installing Python deps..."
+      npm ci
+      echo "🐍 [Render] Setting up Python venv..."
       python3 -m venv tts-env
       source tts-env/bin/activate
       pip install --upgrade pip
-      pip install -r requirements.txt || echo "⚠️ Python deps partial fail (non-blocking)"
+      pip install -r requirements.txt
       echo "✅ [Render] Build complete."
     startCommand: |
       echo "🌟 Launching AI Shorts Generator..."
@@ -33,19 +33,28 @@ services:
         value: ./tts-env/bin/python
       - key: LOG_LEVEL
         value: info
+      # Secrets à ajouter uniquement via le dashboard Render
+      # - key: GROQ_API_KEY
+      #   sync: false
+      # - key: OPENAI_API_KEY
+      #   sync: false
+      # - key: PLAYHT_API_KEY
+      #   sync: false
     healthCheckPath: /
     disk:
       name: uploads
       mountPath: /mnt/data
-      sizeGB: 2
+      sizeGB: 10
     scaling:
       minInstances: 1
-      maxInstances: 2          # > minInstances pour valider
-      targetCPUPercent: 50     # requis par Render (1-90)
+      maxInstances: 4          # Scaling horizontal possible
+      targetCPUPercent: 60     # Ajustable (1-90)
+      targetMemoryPercent: 70  # Ajustable (1-90)
 # ============================================================
 # Notes :
-# - Gratuit, pas besoin de carte de paiement
-# - Déploie ton serveur Node + venv Python
+# - Préparé pour instances payantes / GPU / scaling
 # - Auto déploiement à chaque push sur main
-# - Secrets (API keys) à ajouter uniquement via le dashboard Render
+# - Secrets (API keys) à configurer uniquement via dashboard
+# - Disk 10GB pour médias lourds (vidéos)
+# - Scaling horizontal + surveillance CPU/Mem pour perf optimale
 # ============================================================
