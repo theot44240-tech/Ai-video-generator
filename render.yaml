@@ -35,3 +35,5 @@ services:
       sizeGB: 2
     scaling:
       minInstances: 1
+      maxInstances: 1
+      targetCPUPercent: 50
