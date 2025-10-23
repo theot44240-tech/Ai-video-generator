@@ -1,14 +1,11 @@
-// server.js — Version pro & déploiement-ready
-
 import express from "express";
 import dotenv from "dotenv";
 import chalk from "chalk";
-import os from "os";
 import { execSync } from "child_process";
+import os from "os";
 
 dotenv.config();
 
-// ===== CONFIG =====
 const PORT = process.env.PORT || 3000;
 const NODE_ENV = process.env.NODE_ENV || "production";
 
@@ -17,48 +14,51 @@ const log = (msg, level = "info") => {
   console.log(chalk[colors[level]](`[${new Date().toISOString()}] ${msg}`));
 };
 
-// ===== SYSTEM CHECKS =====
+// --- GPU Check ---
 const checkGPU = () => {
   try {
-    execSync("nvidia-smi", { stdio: "pipe" });
-    log("💻 GPU detected and accessible.", "success");
+    const info = execSync("nvidia-smi", { stdio: "pipe" }).toString();
+    log("💻 GPU detected:\n" + info.split("\n")[0], "success");
   } catch {
-    log("⚠️ No GPU detected, CPU mode active.", "warn");
+    log("⚠️ No GPU detected — using CPU fallback", "warn");
   }
 };
 
-// Display system load
-const monitorSystem = () => {
+// --- System Monitoring ---
+const monitorResources = () => {
   setInterval(() => {
     const load = os.loadavg()[0].toFixed(2);
-    const used = ((os.totalmem() - os.freemem()) / 1024 / 1024 / 1024).toFixed(2);
-    log(`📊 Load: ${load} | RAM used: ${used} GB`, "info");
-  }, 20000);
+    const memUsed = ((os.totalmem() - os.freemem()) / 1024 / 1024 / 1024).toFixed(2);
+    log(`📊 Load: ${load} | RAM: ${memUsed} GB`, "info");
+  }, 15000);
 };
 
-// ===== EXPRESS SERVER =====
-const app = express();
-app.use(express.json());
+// --- AI Placeholders ---
+const loadModels = async () => {
+  log("🤖 Loading AI models...", "info");
+  // TODO: integrate LLaMA, Groq, Whisper, etc.
+  await new Promise((r) => setTimeout(r, 500));
+  log("✅ AI models ready", "success");
+};
 
-// Test route
-app.get("/", (req, res) => {
-  res.send("🚀 AI Shorts Generator — Ultimate Level 999999999 is running");
-});
-
-// ===== START SERVER =====
+// --- Server ---
 const startServer = async () => {
-  try {
-    checkGPU();
-    monitorSystem();
+  const app = express();
+  app.use(express.json());
 
-    app.listen(PORT, "0.0.0.0", () => {
-      log(`🌍 Server listening on port ${PORT}`, "success");
-      log(`🌦 Environment: ${NODE_ENV}`, "info");
-    });
-  } catch (err) {
-    log(`❌ Server startup error: ${err.message}`, "error");
-    process.exit(1);
-  }
+  app.get("/", (req, res) => {
+    res.send("🚀 AI Shorts Generator — Top 0.1% Edition");
+  });
+
+  const server = app.listen(PORT, () => {
+    log(`🌟 Server running on port ${PORT} [${NODE_ENV}]`, "success");
+  });
+
+  server.on("error", (err) => log(`❌ Server error: ${err}`, "error"));
+
+  monitorResources();
+  await loadModels();
+  checkGPU();
 };
 
 startServer();
