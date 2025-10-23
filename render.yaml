@@ -1,8 +1,12 @@
+# ============================================================
+# 🌟 Render Blueprint — AI Shorts Generator (Free Starter)
+# Version: 1.0.2
+# ============================================================
 services:
   - type: web
     name: ai-video-generator
     env: node
-    plan: starter
+    plan: starter       # Gratuit
     region: frankfurt
     buildCommand: |
       echo "🚀 Installing Node deps..."
@@ -35,5 +39,11 @@ services:
       sizeGB: 2
     scaling:
       minInstances: 1
-      maxInstances: 1
-      targetCPUPercent: 50
+      maxInstances: 2       # doit être > minInstances pour passer la validation
+      targetCPUPercent: 50  # nécessaire pour la validation
+# ============================================================
+# Notes :
+# - Gratuit, pas besoin de carte bancaire
+# - Auto déploiement à chaque push sur main
+# - Secrets (API keys) à ajouter uniquement via le dashboard Render
+# ============================================================
