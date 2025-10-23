@@ -1,5 +1,5 @@
 # ============================================================
-# 🌟 Render Blueprint — AI Shorts Generator (Free Starter)
+# 🌟 Render Blueprint — AI Shorts Generator (Starter Gratuit)
 # Version: 1.0.0
 # ============================================================
 services:
@@ -40,7 +40,8 @@ services:
       sizeGB: 2
     scaling:
       minInstances: 1
-      maxInstances: 1   # obligatoire pour rester dans le gratuit
+      maxInstances: 2          # > minInstances pour valider
+      targetCPUPercent: 50     # requis par Render (1-90)
 # ============================================================
 # Notes :
 # - Gratuit, pas besoin de carte de paiement
